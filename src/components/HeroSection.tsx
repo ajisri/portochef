@@ -4,6 +4,36 @@ import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { useApp } from '../context/AppContext';
+
+const contentMap = {
+  id: {
+    precision: 'Precision',
+    label: 'Fundamental / 2026',
+    heading1: 'Presisi',
+    heading2: 'Untuk',
+    heading3: 'Mahakarya.',
+    p1Label: '01 / The Origin',
+    p1Desc: 'Surabaya—Sydney. Ditempa oleh realitas, dipahat oleh kedisiplinan sejak usia 14 tahun.',
+    p2Label: '02 / The Grit',
+    p2Desc: 'Insting yang diasah dari dasar paling dalam, melalui ribuan jam sebelum berdiri di puncak dapur.',
+    p3Label: '03 / The Ethos',
+    p3Desc: 'Respect the ingredients. The technique. The forbearance.',
+  },
+  en: {
+    precision: 'Precision',
+    label: 'Fundamental / 2026',
+    heading1: 'Precision',
+    heading2: 'For',
+    heading3: 'Masterpieces.',
+    p1Label: '01 / The Origin',
+    p1Desc: 'Surabaya—Sydney. Forged by reality, sculpted by discipline since the age of 14.',
+    p2Label: '02 / The Grit',
+    p2Desc: 'Instincts honed from the deepest depths, through thousands of hours before standing at the pinnacle of the kitchen.',
+    p3Label: '03 / The Ethos',
+    p3Desc: 'Respect the ingredients. The technique. The forbearance.',
+  }
+};
 
 /**
  * @component HeroSection
@@ -18,6 +48,15 @@ import { useGSAP } from '@gsap/react';
 export default function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
   const [mounted, setMounted] = useState(false);
+  
+  let language: 'id' | 'en' = 'id';
+  try {
+    const appCtx = useApp();
+    language = appCtx.language;
+  } catch (e) {
+    // Ignore error
+  }
+  const t = contentMap[language];
   
   // High-fidelity interaction refs
   const headingRef = useRef<HTMLDivElement>(null);
@@ -147,7 +186,7 @@ export default function HeroSection() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full min-h-screen bg-[#FDFDFD] text-[#111111] overflow-hidden antialiased flex flex-col pt-32 pb-24 md:pb-32 px-6 md:px-16"
+      className="relative w-full min-h-screen bg-background text-foreground transition-colors duration-500 overflow-hidden antialiased flex flex-col pt-32 pb-24 md:pb-32 px-6 md:px-16"
       aria-label="Hero Introduction"
     >
       <div className="grain-overlay" aria-hidden="true"></div>
@@ -159,8 +198,8 @@ export default function HeroSection() {
         ref={bgTextRef} 
         className="bg-display-text absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center pointer-events-none z-0"
       >
-        <h2 className="text-[28vw] font-sans font-black text-[#111111]/[0.015] leading-none select-none tracking-tighter uppercase">
-          Precision
+        <h2 className="text-[28vw] font-sans font-black text-foreground opacity-5 dark:opacity-[0.03] transition-colors duration-500 leading-none select-none tracking-tighter uppercase">
+          {t.precision}
         </h2>
       </div>
 
@@ -171,13 +210,13 @@ export default function HeroSection() {
         {[8.333333, 25, 33.333333, 33.333333].map((width, i) => (
           <div 
             key={i} 
-            className={`vertical-grid-line relative h-full border-l border-[#111111]/10 ${i === 3 ? 'border-r' : ''}`} 
+            className={`vertical-grid-line relative h-full border-l border-foreground/10 transition-colors duration-500 ${i === 3 ? 'border-r' : ''}`} 
             style={{ width: `${width}%` }}
           >
             {i === 0 && (
               <div 
                 ref={magneticDotRef}
-                className="hidden md:block absolute bottom-12 -left-[2.5px] w-[5px] h-[5px] bg-[#111111] z-50 pointer-events-auto cursor-crosshair" 
+                className="hidden md:block absolute bottom-12 -left-[2.5px] w-[5px] h-[5px] bg-foreground transition-colors duration-500 z-50 pointer-events-auto cursor-crosshair" 
                 aria-hidden="true"
               />
             )}
@@ -193,24 +232,24 @@ export default function HeroSection() {
         {/* HEADING: Positioned at Col 2, spans across */}
         <div className="md:col-start-2 md:col-span-5 flex flex-col justify-start pt-12 md:pt-20 z-20">
           <div className="overflow-hidden mb-8 md:mb-12">
-            <span className="overline-reveal block text-[10px] md:text-[11px] tracking-[0.4em] uppercase text-[#737373] font-semibold">
-              Fundamental / 2026
+            <span className="overline-reveal block text-[10px] md:text-[11px] tracking-[0.4em] uppercase text-ink-theme transition-colors duration-500 font-semibold">
+              {t.label}
             </span>
           </div>
           
           <div ref={headingRef}>
-            <h1 className="font-sans font-medium text-[#111111] leading-[0.85] tracking-[-0.04em] text-[13vw] md:text-[6vw] md:-ml-[0.05em]">
-              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left">Presisi</div></div>
-              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left">Untuk</div></div>
-              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left">Mahakarya.</div></div>
+            <h1 className="font-sans font-medium text-foreground transition-colors duration-500 leading-[0.85] tracking-[-0.04em] text-[13vw] md:text-[6vw] md:-ml-[0.05em]">
+              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left">{t.heading1}</div></div>
+              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left">{t.heading2}</div></div>
+              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left">{t.heading3}</div></div>
             </h1>
           </div>
           
           {/* Principle 01: Anchored to heading */}
           <article className="bio-principle mt-12 md:mt-24 flex flex-col gap-3 max-w-[280px]">
-            <h3 className="text-[10px] tracking-[0.2em] uppercase text-[#111111] font-bold">01 / The Origin</h3>
-            <p className="text-[14px] text-[#555555] leading-relaxed font-medium">
-              Surabaya—Sydney. Ditempa oleh realitas, dipahat oleh kedisiplinan sejak usia 14 tahun.
+            <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p1Label}</h3>
+            <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
+              {t.p1Desc}
             </p>
           </article>
         </div>
@@ -218,7 +257,7 @@ export default function HeroSection() {
         {/* IMAGE: Floating on the right, asymmetrical vertical alignment */}
         <div className="md:col-start-8 md:col-span-5 relative flex flex-col justify-center items-end h-full pt-24 md:pt-0">
           <div className="w-full max-w-[450px]">
-            <figure className="hero-image-mask w-full aspect-[4/5] relative grayscale hover:grayscale-0 transition-all duration-[1.5s] ease-[cubic-bezier(0.19,1,0.22,1)] overflow-hidden bg-[#EAEAEA] shadow-2xl">
+            <figure className="hero-image-mask w-full aspect-[4/5] relative grayscale hover:grayscale-0 transition-all duration-[1.5s] ease-[cubic-bezier(0.19,1,0.22,1)] overflow-hidden bg-foreground/5 shadow-2xl">
               <div ref={imageInnerRef} className="hero-image-inner absolute inset-0 w-full h-full">
                 <Image
                   src="/chef_portrait.png"
@@ -234,9 +273,9 @@ export default function HeroSection() {
 
           {/* Principle 02: Floating near image */}
           <article className="bio-principle mt-12 md:mt-16 mr-auto md:mr-12 flex flex-col gap-3 max-w-[280px]">
-            <h3 className="text-[10px] tracking-[0.2em] uppercase text-[#111111] font-bold">02 / The Grit</h3>
-            <p className="text-[14px] text-[#555555] leading-relaxed font-medium">
-              Insting yang diasah dari dasar paling dalam, melalui ribuan jam sebelum berdiri di puncak dapur.
+            <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p2Label}</h3>
+            <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
+              {t.p2Desc}
             </p>
           </article>
         </div>
@@ -244,9 +283,9 @@ export default function HeroSection() {
         {/* Principle 03: Lone element on bottom left grid intersection */}
         <div className="md:col-start-2 md:col-span-3 flex items-end pb-12 md:pb-0">
           <article className="bio-principle flex flex-col gap-3 max-w-[280px]">
-            <h3 className="text-[10px] tracking-[0.2em] uppercase text-[#111111] font-bold">03 / The Ethos</h3>
-            <p className="text-[14px] text-[#555555] leading-relaxed font-medium">
-              Respect the ingredients. The technique. The forbearance.
+            <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p3Label}</h3>
+            <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
+              {t.p3Desc}
             </p>
           </article>
         </div>

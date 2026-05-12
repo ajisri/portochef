@@ -6,6 +6,8 @@ import CustomCursor from "../components/CustomCursor";
 
 import Preloader from "../components/Preloader";
 import CircularBadge from "../components/CircularBadge";
+import { AppProvider } from "../context/AppContext";
+import AppControls from "../components/AppControls";
 
 const serif = Playfair_Display({
   variable: "--font-serif",
@@ -28,15 +30,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full" suppressHydrationWarning>
-      <body className={`${serif.variable} ${sans.variable} antialiased selection:bg-obsidian selection:text-white`} suppressHydrationWarning>
-        <ClientWrapper>
-          <Preloader />
-          <CustomCursor />
-          <CircularBadge />
+    <html lang="en" className="h-full bg-background text-foreground" suppressHydrationWarning>
+      <body className={`${serif.variable} ${sans.variable} antialiased selection:bg-obsidian selection:text-white bg-background text-foreground transition-colors duration-500`} suppressHydrationWarning>
+        <AppProvider>
+          <ClientWrapper>
+            <Preloader />
+            <CustomCursor />
+            <CircularBadge />
+            <AppControls />
 
-          {children}
-        </ClientWrapper>
+            {children}
+          </ClientWrapper>
+        </AppProvider>
       </body>
     </html>
   );
