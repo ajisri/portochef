@@ -5,6 +5,7 @@ import Image from 'next/image';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useApp } from '../context/AppContext';
+import Magnetic from './Magnetic';
 
 const contentMap = {
   id: {
@@ -74,36 +75,41 @@ export default function HeroSection() {
     // 1. Grid Entrance
     gsap.fromTo('.vertical-grid-line',
       { scaleY: 0, transformOrigin: 'top' },
-      { scaleY: 1, duration: 2.8, ease: 'expo.inOut', stagger: 0.1 }
+      { scaleY: 1, duration: 2.8, ease: 'expo.inOut', stagger: 0.1, delay: 2.5 }
     );
 
     // 2. Background Text Reveal
     gsap.fromTo('.bg-display-text',
       { opacity: 0, y: 100 },
-      { opacity: 1, y: 0, duration: 2.5, ease: 'power3.out', delay: 0.5 }
+      { opacity: 1, y: 0, duration: 2.5, ease: 'power3.out', delay: 3.0 }
     );
 
     // 3. Typographic Reveal - Oliver Larose Liquid entrance
     gsap.fromTo('.main-heading-line',
       { y: '125%', skewY: 10, rotationZ: 3, opacity: 0 },
-      { y: '0%', skewY: 0, rotationZ: 0, opacity: 1, duration: 2, ease: 'expo.out', delay: 1.2, stagger: 0.15 }
+      { y: '0%', skewY: 0, rotationZ: 0, opacity: 1, duration: 2, ease: 'expo.out', delay: 3.2, stagger: 0.15 }
     );
 
     // 4. Bio Principles - Scattered reveal
     gsap.fromTo('.bio-principle',
       { opacity: 0, y: 60, rotationX: -20 },
-      { opacity: 1, y: 0, rotationX: 0, duration: 1.8, ease: 'power4.out', stagger: 0.25, delay: 1.6 }
+      { opacity: 1, y: 0, rotationX: 0, duration: 1.8, ease: 'power4.out', stagger: 0.25, delay: 3.6 }
     );
 
     // 5. Image Mask & Inner Content Reveal
     gsap.fromTo('.hero-image-mask',
       { clipPath: 'inset(100% 0% 0% 0%)' },
-      { clipPath: 'inset(0% 0% 0% 0%)', duration: 2.6, ease: 'expo.inOut', delay: 0.8 }
+      { clipPath: 'inset(0% 0% 0% 0%)', duration: 2.6, ease: 'expo.inOut', delay: 3.0 }
     );
     
     gsap.fromTo('.hero-image-inner',
       { scale: 1.4, yPercent: 20 },
-      { scale: 1, yPercent: 0, duration: 3, ease: 'expo.inOut', delay: 0.8 }
+      { scale: 1, yPercent: 0, duration: 3, ease: 'expo.inOut', delay: 3.0 }
+    );
+
+    gsap.fromTo('.hero-image-inner',
+      { filter: 'blur(24px)' },
+      { filter: 'blur(0px)', duration: 1.5, ease: 'power2.out', delay: 5.2 }
     );
 
   }, { scope: containerRef, dependencies: [mounted] });
@@ -185,6 +191,7 @@ export default function HeroSection() {
 
   return (
     <section
+      id="hero"
       ref={containerRef}
       className="relative w-full min-h-screen bg-background text-foreground transition-colors duration-500 overflow-hidden antialiased flex flex-col pt-32 pb-24 md:pb-32 px-6 md:px-16"
       aria-label="Hero Introduction"
@@ -288,6 +295,32 @@ export default function HeroSection() {
               {t.p3Desc}
             </p>
           </article>
+        </div>
+
+        {/* Scroll Indicator (Larose Style) */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50">
+          <Magnetic strength={0.3}>
+            <a 
+              href="#about"
+              onClick={(e) => {
+                e.preventDefault();
+                const lenis = (window as any).lenis;
+                if (lenis) {
+                  lenis.scrollTo('#about');
+                } else {
+                  document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="flex flex-col items-center gap-4 group cursor-pointer"
+            >
+              <span className="text-[9px] tracking-[0.4em] uppercase font-bold text-foreground transition-colors duration-500 opacity-40 group-hover:opacity-100 block">
+                {language === 'id' ? 'Eksplorasi' : 'Explore'}
+              </span>
+              <div className="w-[1px] h-12 bg-foreground/20 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-full bg-foreground scale-y-0 group-hover:scale-y-100 origin-top transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]"></div>
+              </div>
+            </a>
+          </Magnetic>
         </div>
 
       </div>

@@ -10,6 +10,9 @@ export default function ClientWrapper({ children }: { children: ReactNode }) {
       lerp: 0.05,
       infinite: false,
     });
+    
+    // Expose lenis globally for anchor navigation
+    (window as any).lenis = lenis;
 
     function raf(time: number) {
       lenis.raf(time);
