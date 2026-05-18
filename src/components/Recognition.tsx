@@ -115,8 +115,8 @@ export default function Recognition() {
               {language === 'id' ? 'Pengakuan Global / 30 Under 30' : 'Global Recognition / 30 Under 30'}
             </span>
             <h2 className="recognition-title text-[13vw] md:text-[7.5vw] font-serif leading-[0.85] tracking-tighter text-foreground transition-colors duration-500 md:-ml-3">
-              <div className="overflow-hidden pb-4"><div className="recognition-title-line">{language === 'id' ? 'Pencapaian.' : 'Achievement.'}</div></div>
-              <div className="overflow-hidden pb-4"><div className="recognition-title-line">{language === 'id' ? 'Kelas Global' : 'Global Class'}</div></div>
+              <div className="overflow-hidden pb-4"><div className="recognition-title-line">Forbes 30</div></div>
+              <div className="overflow-hidden pb-4"><div className="recognition-title-line">Under 30.</div></div>
             </h2>
           </div>
 
@@ -152,7 +152,7 @@ export default function Recognition() {
       {/* Decorative Structural Point (Larose Minimalist Flair) */}
       <div className="absolute bottom-24 right-16 flex flex-col items-end gap-4 opacity-20">
         <div className="w-12 h-[1px] bg-foreground transition-colors duration-500"></div>
-        <span className="text-[9px] tracking-[0.4em] uppercase font-bold text-foreground transition-colors duration-500 vertical-text">{language === 'id' ? 'Otoritas' : 'Authority'}</span>
+        <span className="text-[9px] tracking-[0.4em] uppercase font-bold text-foreground transition-colors duration-500 vertical-text">Forbes 2017</span>
       </div>
     </section>
   );

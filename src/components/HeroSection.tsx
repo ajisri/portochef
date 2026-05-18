@@ -9,30 +9,40 @@ import Magnetic from './Magnetic';
 
 const contentMap = {
   id: {
-    precision: 'Precision',
+    precision: 'Technique',
     label: 'Fundamental / 2026',
-    heading1: 'Presisi',
-    heading2: 'Untuk',
-    heading3: 'Mahakarya.',
+    heading1: 'Sederhana,',
+    heading2: 'Terstruktur,',
+    heading3: 'Konsisten.',
     p1Label: '01 / The Origin',
-    p1Desc: 'Surabaya—Sydney. Ditempa oleh realitas, dipahat oleh kedisiplinan sejak usia 14 tahun.',
-    p2Label: '02 / The Grit',
-    p2Desc: 'Insting yang diasah dari dasar paling dalam, melalui ribuan jam sebelum berdiri di puncak dapur.',
+    p1Desc: (
+      <>
+        Surabaya—Sydney.<br />
+        Ditempa oleh realitas, dipahat oleh kedisiplinan sejak usia 14 tahun.
+      </>
+    ),
+    p2Label: '02 / The Process',
+    p2Desc: 'Memulai dari bawah di dapur komersial. Mempelajari alur kerja, efisiensi, dan pentingnya menjaga konsistensi setiap hari.',
     p3Label: '03 / The Ethos',
-    p3Desc: 'Respect the ingredients. The technique. The forbearance.',
+    p3Desc: 'Makanan yang baik tidak membutuhkan narasi berlebihan. Biarkan kualitas bahan dan eksekusi yang berbicara.',
   },
   en: {
-    precision: 'Precision',
+    precision: 'Technique',
     label: 'Fundamental / 2026',
-    heading1: 'Precision',
-    heading2: 'For',
-    heading3: 'Masterpieces.',
+    heading1: 'Simple,',
+    heading2: 'Structured,',
+    heading3: 'Consistent.',
     p1Label: '01 / The Origin',
-    p1Desc: 'Surabaya—Sydney. Forged by reality, sculpted by discipline since the age of 14.',
-    p2Label: '02 / The Grit',
-    p2Desc: 'Instincts honed from the deepest depths, through thousands of hours before standing at the pinnacle of the kitchen.',
+    p1Desc: (
+      <>
+        Surabaya—Sydney.<br />
+        Forged by reality, sculpted by discipline since the age of 14.
+      </>
+    ),
+    p2Label: '02 / The Process',
+    p2Desc: 'Starting from the bottom in commercial kitchens. Understanding workflow, efficiency, and the importance of daily consistency.',
     p3Label: '03 / The Ethos',
-    p3Desc: 'Respect the ingredients. The technique. The forbearance.',
+    p3Desc: 'Good food requires no excessive narrative. Let the quality of ingredients and clean execution speak for themselves.',
   }
 };
 
