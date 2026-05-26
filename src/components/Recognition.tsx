@@ -35,23 +35,8 @@ export default function Recognition() {
     if (!mounted) return;
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Massive Background Text Parallax (Atmospheric depth)
-    gsap.fromTo('.recognition-bg-text',
-      { y: 250, opacity: 0 },
-      {
-        y: -150,
-        opacity: 0.02,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true,
-        }
-      }
-    );
 
-    // 2. Liquid Title Reveal - Editorial snap
+    // 1. Liquid Title Reveal - Editorial snap
     gsap.fromTo('.recognition-title-line',
       { yPercent: 115, skewY: 12, rotationZ: 3 },
       {
@@ -96,12 +81,6 @@ export default function Recognition() {
       {/* Texture Overlay */}
       <div className="grain-overlay opacity-[0.015]" aria-hidden="true"></div>
 
-      {/* Atmospheric Background Layer */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-         <span className="recognition-bg-text text-[38vw] font-sans font-black text-foreground opacity-0 tracking-tighter uppercase leading-none select-none">
-            Forbes
-         </span>
-      </div>
 
       {/* Structural Swiss Grid Guide */}
       <div className="absolute top-0 left-[8.333333%] h-full border-l border-foreground/10 transition-colors duration-500 z-0 hidden md:block"></div>

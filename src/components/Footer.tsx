@@ -55,20 +55,7 @@ export default function Footer() {
       }
     );
 
-    // 2. Background Text Parallax
-    gsap.fromTo('.footer-bg-text',
-      { y: 100 },
-      {
-        y: -100,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: footerRef.current,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true,
-        }
-      }
-    );
+
 
   }, { scope: footerRef, dependencies: [mounted] });
 
@@ -81,12 +68,6 @@ export default function Footer() {
     >
       <div className="grain-overlay opacity-[0.015]" aria-hidden="true"></div>
 
-      {/* Atmospheric Background Layer */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-        <span className="footer-bg-text text-[30vw] font-sans font-black text-foreground opacity-5 dark:opacity-[0.02] transition-colors duration-500 tracking-tighter uppercase leading-none select-none">
-          Connect
-        </span>
-      </div>
 
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-y-20 md:gap-y-0 relative z-10">
 

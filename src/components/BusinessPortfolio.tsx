@@ -343,13 +343,6 @@ export default function BusinessPortfolio() {
           </div>
 
         </div>
-
-        {/* Large Decorative Vertical Text (Editorial Flair) */}
-        <div className="absolute right-0 top-1/4 h-full pointer-events-none select-none z-0 hidden lg:block">
-          <span className="text-[12vw] font-sans font-black text-foreground opacity-5 dark:opacity-[0.03] transition-colors duration-500 leading-none uppercase tracking-tighter origin-bottom-right rotate-90 whitespace-nowrap">
-            {language === 'id' ? 'Portofolio Bisnis' : 'Business Portfolio'}
-          </span>
-        </div>
       </div>
 
       <ComingSoonModal 

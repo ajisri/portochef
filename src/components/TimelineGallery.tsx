@@ -93,24 +93,8 @@ export default function TimelineGallery() {
 
     // Individual Layered Parallax for each card
     cards.forEach((card) => {
-      const yearBg = card.querySelector('.card-year-bg');
       const imageInner = card.querySelector('.card-image-inner');
       const title = card.querySelector('.card-title');
-
-      // Parallax for the massive background year
-      gsap.fromTo(yearBg,
-        { x: '10%' },
-        {
-          x: '-10%',
-          scrollTrigger: {
-            trigger: card,
-            containerAnimation: scrollTween,
-            start: 'left right',
-            end: 'right left',
-            scrub: true
-          }
-        }
-      );
 
       // Deep parallax for the image inside its frame
       gsap.fromTo(imageInner,
@@ -175,12 +159,6 @@ export default function TimelineGallery() {
         {timelineData.map((item, index) => (
           <div key={index} className="timeline-card w-screen h-full flex-shrink-0 relative flex items-center justify-center px-6 md:px-24">
 
-            {/* Background Year Typography (Depth Layer) */}
-            <div className="card-year-bg absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-              <span className="text-[32vw] font-sans font-black text-foreground opacity-5 dark:opacity-[0.03] tracking-tighter select-none uppercase transition-colors duration-500">
-                {item.year}
-              </span>
-            </div>
 
             {/* Asymmetrical Content Grid */}
             <div className="relative z-10 w-full max-w-[1300px] grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
