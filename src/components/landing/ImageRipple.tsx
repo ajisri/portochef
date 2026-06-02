@@ -18,8 +18,9 @@ function ImageRippleShader({ imageUrl }: { imageUrl: string }) {
   const texture = useTexture(imageUrl);
 
   // Use lerp targets for smooth animation
-  const mouse = useRef({ x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5 });
+  const mouse = useRef({ x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5, lastMoveMs: 0 });
   const hoverState = useRef({ value: 0, target: 0 }); // 0 = grayscale, 1 = colored
+  const movingState = useRef({ value: 0, target: 0 }); // 0 = stopped, 1 = moving
 
   const uniforms = useMemo(
     () => ({
@@ -27,6 +28,7 @@ function ImageRippleShader({ imageUrl }: { imageUrl: string }) {
       uTime: { value: 0 },
       uMouse: { value: new THREE.Vector2(0.5, 0.5) },
       uHover: { value: 0.0 },
+      uMoving: { value: 0.0 },
       uResolution: { value: new THREE.Vector2(size.width, size.height) },
       uImageSize: { value: new THREE.Vector2((texture.image as any)?.width || 1024, (texture.image as any)?.height || 1024) },
     }),
@@ -49,6 +51,13 @@ function ImageRippleShader({ imageUrl }: { imageUrl: string }) {
     hoverState.current.value += (hoverState.current.target - hoverState.current.value) * 0.05;
     mat.uniforms.uHover.value = hoverState.current.value;
 
+    // Smooth moving state (ripple distortion)
+    const timeSinceMove = performance.now() - mouse.current.lastMoveMs;
+    const isMoving = timeSinceMove < 150; // 150ms timeout
+    movingState.current.target = isMoving ? 1.0 : 0.0;
+    movingState.current.value += (movingState.current.target - movingState.current.value) * 0.08;
+    mat.uniforms.uMoving.value = movingState.current.value;
+
     // Update resolution on resize
     mat.uniforms.uResolution.value.set(size.width, size.height);
   });
@@ -57,6 +66,7 @@ function ImageRippleShader({ imageUrl }: { imageUrl: string }) {
     // Convert to normalized UV space (0 to 1)
     mouse.current.targetX = e.uv.x;
     mouse.current.targetY = e.uv.y;
+    mouse.current.lastMoveMs = performance.now();
     // When moving, keep hover active
     hoverState.current.target = 1.0;
   };
@@ -87,6 +97,7 @@ function ImageRippleShader({ imageUrl }: { imageUrl: string }) {
     uniform float uTime;
     uniform vec2 uMouse;
     uniform float uHover;
+    uniform float uMoving;
     uniform vec2 uResolution;
     uniform vec2 uImageSize;
 
@@ -119,20 +130,29 @@ function ImageRippleShader({ imageUrl }: { imageUrl: string }) {
       pos.x *= aspect;
       mousePos.x *= aspect;
 
-      // 3. Distance and Hover Interaction
-      float dist = distance(pos, mousePos);
+      // Scale vUv so the image occupies exactly the central portion of the 130% canvas
+      // The canvas is 1.3x the container. The image is 1.0x.
+      // So padding on each side is (1.3 - 1.0) / 2.0 = 0.15 of the container.
+      // In normalized UV of the canvas (which is 1.3), the image spans from:
+      // (1.3 - 1.0) / 2 / 1.3 = 0.11538 to 1.0 - 0.11538 = 0.88461.
       
-      // The ripple radius grows slightly when hovered
-      float rippleRadius = mix(0.0, 0.45, uHover);
+      float scale = 1.3;
+      float ratio = 1.0 / scale;
+      float pad = (1.0 - ratio) / 2.0;
+      vec2 paddedUv = (vUv - pad) / ratio;
       
-      // Falloff creates a localized area of effect around the mouse
-      float falloff = smoothstep(rippleRadius, 0.0, dist);
+      // 3. Object-fit cover logic will be applied LATER
+      // First, calculate the distortion
 
-      // 4. Liquid Ripple Distortion Algorithm (Homunculus style UV bending)
-      // Using time and sine waves to create organic water-like movement
+      // Liquid Ripple Distortion Algorithm (Homunculus style UV bending)
       float waveSpeed = uTime * 2.5;
       float waveFrequency = 15.0;
-      float distortionIntensity = 0.03 * falloff * uHover; // Only distort when hovering
+      
+      // Multiply by uMoving so distortion completely stops when cursor is still
+      float dist = distance(pos, mousePos);
+      float rippleRadius = mix(0.0, 0.45, uHover);
+      float falloff = smoothstep(rippleRadius, 0.0, dist);
+      float distortionIntensity = 0.05 * falloff * uHover * uMoving; 
 
       vec2 distortion = vec2(
         sin(dist * waveFrequency - waveSpeed) * distortionIntensity,
@@ -140,13 +160,31 @@ function ImageRippleShader({ imageUrl }: { imageUrl: string }) {
       );
 
       // Add secondary noise layer for organic flow
-      distortion.x += sin(vUv.y * 10.0 + uTime) * 0.01 * falloff * uHover;
-      distortion.y += cos(vUv.x * 10.0 + uTime) * 0.01 * falloff * uHover;
+      distortion.x += sin(vUv.y * 10.0 + uTime) * 0.015 * falloff * uHover * uMoving;
+      distortion.y += cos(vUv.x * 10.0 + uTime) * 0.015 * falloff * uHover * uMoving;
 
-      // Apply distortion to the cover-corrected UV
-      vec2 finalUv = coverUv + distortion;
+      // 4. Apply distortion to the CONTAINER coordinates (paddedUv)
+      // This bends the actual boundary of the 4/5 box
+      vec2 distortedPaddedUv = paddedUv + distortion;
 
-      // 5. Sample the Image
+      // 5. Bounds Check
+      // If the distorted coordinate falls outside the [0, 1] container, it is empty space
+      if (distortedPaddedUv.x < 0.0 || distortedPaddedUv.x > 1.0 || distortedPaddedUv.y < 0.0 || distortedPaddedUv.y > 1.0) {
+        gl_FragColor = vec4(0.0);
+        return;
+      }
+      
+      // 6. Object-fit cover logic natively in shader applied to the VALID, distorted container area
+      vec2 coverRatio = vec2(
+        min((uResolution.x / uResolution.y) / (uImageSize.x / uImageSize.y), 1.0),
+        min((uResolution.y / uResolution.x) / (uImageSize.y / uImageSize.x), 1.0)
+      );
+      vec2 finalUv = vec2(
+        distortedPaddedUv.x * coverRatio.x + (1.0 - coverRatio.x) * 0.5,
+        distortedPaddedUv.y * coverRatio.y + (1.0 - coverRatio.y) * 0.5
+      );
+
+      // Sample the Image
       vec4 color = texture2D(uTexture, finalUv);
 
       // 6. Grayscale to Color Transition natively in Shader
@@ -193,7 +231,16 @@ export default function ImageRipple({
   alt?: string;
 }) {
   return (
-    <div className="w-full h-full relative cursor-crosshair">
+    // Increase container to 130% so pixels can spill outside the normal box
+    <div 
+      className="absolute cursor-crosshair pointer-events-auto" 
+      style={{
+        width: '130%',
+        height: '130%',
+        left: '-15%',
+        top: '-15%'
+      }}
+    >
       {/* 
         We use an HTML img as a visually-hidden fallback for SEO 
         and while the canvas initializes 

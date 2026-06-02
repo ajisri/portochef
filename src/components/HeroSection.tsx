@@ -54,16 +54,9 @@ const contentMap = {
  * @component WaterRippleFilter
  * @description
  * Renders a hidden SVG <defs> containing the animated water ripple filter.
- *
- * Key technique: SVG SMIL <animate> is the ONLY reliable way to animate
- * feTurbulence's baseFrequency attribute. It runs entirely in the SVG
- * rendering engine — no JavaScript, no GSAP, no rAF needed.
- *
- * filterUnits="userSpaceOnUse" prevents objectBoundingBox distortion on
- * non-square elements (text columns). The large x/y/width/height region
- * prevents clipping when displacement pushes pixels outside the element bounds.
+ * Controlled dynamically via JS so it stops animating when cursor stops.
  */
-function WaterRippleFilter() {
+function WaterRippleFilter({ filterRef }: { filterRef: React.RefObject<SVGFEDisplacementMapElement | null> }) {
   return (
     <svg
       aria-hidden="true"
@@ -77,11 +70,6 @@ function WaterRippleFilter() {
       }}
     >
       <defs>
-        {/* ------------------------------------------------------------------ */}
-        {/* FILTER: water-ripple                                                */}
-        {/* Applied to HTML text containers via  style={{ filter: 'url(#water-ripple)' }} */}
-        {/* filterUnits="userSpaceOnUse" + large bounding box prevents clipping */}
-        {/* ------------------------------------------------------------------ */}
         <filter
           id="water-ripple"
           x="-30%"
@@ -91,7 +79,6 @@ function WaterRippleFilter() {
           filterUnits="userSpaceOnUse"
           colorInterpolationFilters="linearRGB"
         >
-          {/* Layer 1: Slow organic noise — forms the base water surface */}
           <feTurbulence
             type="fractalNoise"
             baseFrequency="0.012 0.009"
@@ -99,7 +86,6 @@ function WaterRippleFilter() {
             seed="3"
             result="noise1"
           >
-            {/* SMIL animate: browser-native, animates SVG attributes directly */}
             <animate
               attributeName="baseFrequency"
               values="0.012 0.009; 0.020 0.015; 0.012 0.009"
@@ -110,7 +96,6 @@ function WaterRippleFilter() {
             />
           </feTurbulence>
 
-          {/* Layer 2: Faster ripple noise — adds surface chop */}
           <feTurbulence
             type="turbulence"
             baseFrequency="0.035 0.025"
@@ -128,13 +113,11 @@ function WaterRippleFilter() {
             />
           </feTurbulence>
 
-          {/* Blend both noise layers */}
           <feMerge result="combinedNoise">
             <feMergeNode in="noise1" />
             <feMergeNode in="noise2" />
           </feMerge>
 
-          {/* Composite to boost contrast of the noise map */}
           <feComposite
             in="combinedNoise"
             in2="combinedNoise"
@@ -146,35 +129,27 @@ function WaterRippleFilter() {
             result="displacementMap"
           />
 
-          {/* The displacement map: applies UV offset to the source pixels */}
           <feDisplacementMap
+            ref={filterRef}
             in="SourceGraphic"
             in2="displacementMap"
-            scale="10"
+            scale="0"
             xChannelSelector="R"
             yChannelSelector="G"
-          >
-            {/* Animate scale for breathing/pulsing intensity */}
-            <animate
-              attributeName="scale"
-              values="6; 14; 6"
-              dur="6s"
-              repeatCount="indefinite"
-              calcMode="spline"
-              keySplines="0.45 0.05 0.55 0.95; 0.45 0.05 0.55 0.95"
-            />
-          </feDisplacementMap>
+          />
         </filter>
       </defs>
     </svg>
   );
 }
-
 /**
  * @component HeroSection
  */
 export default function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
+  const filterRef = useRef<SVGFEDisplacementMapElement>(null);
+  const lastMoveMs = useRef(0);
+  const currentScale = useRef(0);
   const [mounted, setMounted] = useState(false);
 
   let language: 'id' | 'en' = 'id';
@@ -235,7 +210,13 @@ export default function HeroSection() {
     // Image mask reveal
     gsap.fromTo('.hero-image-mask',
       { clipPath: 'inset(100% 0% 0% 0%)' },
-      { clipPath: 'inset(0% 0% 0% 0%)', duration: 2.6, ease: 'expo.inOut', delay: 3.0 }
+      { 
+        clipPath: 'inset(0% 0% 0% 0%)', 
+        duration: 2.6, 
+        ease: 'expo.inOut', 
+        delay: 3.0,
+        onComplete: () => gsap.set('.hero-image-mask', { clearProps: 'clipPath' })
+      }
     );
     gsap.fromTo('.hero-image-inner',
       { scale: 1.4, yPercent: 20 },
@@ -261,12 +242,14 @@ export default function HeroSection() {
   }, { scope: containerRef, dependencies: [mounted] });
 
   // -------------------------------------------------------------------------
-  // Parallax + magnetic cursor tracking
+  // Parallax + magnetic cursor tracking + Filter ripple control
   // -------------------------------------------------------------------------
   useEffect(() => {
     if (!mounted) return;
 
     const handleMouseMove = (e: MouseEvent) => {
+      lastMoveMs.current = performance.now();
+      
       const { clientX, clientY } = e;
       const { innerWidth, innerHeight } = window;
       const nx = (clientX / innerWidth) * 2 - 1;
@@ -292,8 +275,35 @@ export default function HeroSection() {
       }
     };
 
+    let animationFrameId: number;
+    const loop = () => {
+      const timeSinceMove = performance.now() - lastMoveMs.current;
+      const isMoving = timeSinceMove < 150;
+      
+      // Calculate target scale. When moving, it breathes between 6 and 14 based on time.
+      // When stopped, it drops to 0.
+      const timeSec = performance.now() / 1000;
+      const breathingScale = 10 + Math.sin(timeSec * 1.5) * 4; 
+      const targetScale = isMoving ? breathingScale : 0;
+
+      // Smooth lerp for scale
+      currentScale.current += (targetScale - currentScale.current) * 0.1;
+
+      if (filterRef.current) {
+        if (Math.abs(targetScale - currentScale.current) > 0.01 || currentScale.current > 0.01) {
+          filterRef.current.setAttribute('scale', currentScale.current.toString());
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(loop);
+    };
+
+    loop();
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, [mounted]);
 
   // -------------------------------------------------------------------------
@@ -306,11 +316,12 @@ export default function HeroSection() {
       className="relative w-full min-h-screen bg-background text-foreground transition-colors duration-500 overflow-hidden antialiased flex flex-col pt-32 pb-24 md:pb-32 px-6 md:px-16"
       aria-label="Hero Introduction"
     >
+
       {/* ------------------------------------------------------------------ */}
       {/* SVG filter definition — rendered client-side only to avoid SSR    */}
       {/* hydration mismatch with SVG SMIL animate elements                  */}
       {/* ------------------------------------------------------------------ */}
-      {mounted && <WaterRippleFilter />}
+      {mounted && <WaterRippleFilter filterRef={filterRef} />}
 
       {/* ------------------------------------------------------------------ */}
       {/* WebGL ripple shader — background caustic layer                     */}
@@ -360,9 +371,6 @@ export default function HeroSection() {
 
         {/* LEFT COLUMN: Heading + Principle 01                             */}
         {/*                                                                  */}
-        {/* Water ripple applied here via SVG filter.                       */}
-        {/* The filter distorts pixels of this entire column at the GPU     */}
-        {/* level, making both heading text and bio text ripple like water. */}
         <div
           className="md:col-start-2 md:col-span-5 flex flex-col justify-start pt-12 md:pt-20 z-20 water-ripple-hover"
         >
@@ -391,7 +399,7 @@ export default function HeroSection() {
         {/* RIGHT COLUMN: Image + Principle 02                              */}
         <div className="md:col-start-8 md:col-span-5 relative flex flex-col justify-center items-end h-full pt-24 md:pt-0">
           <div ref={imageContainerRef} className="w-full max-w-[450px]">
-            <figure className="hero-image-mask w-full aspect-[4/5] relative overflow-hidden bg-foreground/5 shadow-2xl">
+            <figure className="hero-image-mask w-full aspect-[4/5] relative">
               <div ref={imageInnerRef} className="hero-image-inner absolute inset-0 w-full h-full">
                 <ImageRipple
                   src="/chef_portrait.png"
