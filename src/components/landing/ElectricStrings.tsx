@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { createNoise3D } from 'simplex-noise';
@@ -289,11 +289,16 @@ function ElectricString({
   }, []);
 
   // Ensure proper GPU memory deallocation when unmounting
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       geometry.dispose();
     };
   }, [geometry]);
+
+  const isDarkRef = useRef(isDarkMode);
+  useEffect(() => {
+    isDarkRef.current = isDarkMode;
+  }, [isDarkMode]);
 
   // Remove isDarkMode from dependency array! The theme value is updated smoothly in useFrame
   const uniforms = useMemo(
@@ -316,7 +321,7 @@ function ElectricString({
 
     // Update uniforms
     mat.uniforms.uTime.value = time;
-    const targetDark = isDarkMode ? 1.0 : 0.0;
+    const targetDark = isDarkRef.current ? 1.0 : 0.0;
     mat.uniforms.uIsDark.value += (targetDark - mat.uniforms.uIsDark.value) * 0.03;
 
     // -----------------------------------------------------------------------

@@ -45,10 +45,10 @@ import * as THREE from 'three';
 // ---------------------------------------------------------------------------
 const FBO_SIZE         = 512;    // Resolusi displacement map (lebih tinggi = lebih halus)
 const BRUSH_RADIUS     = 0.12;   // Radius gaussian kuas (0.12 = besar, sangat halus)
-const DAMPING          = 0.945;  // Decay per-frame: 0.945^90 ≈ 0.007 → hilang dalam ~1.5 detik
+const DAMPING          = 0.90;   // Decay per-frame: 0.90^45 ≈ 0.008 → hilang dalam ~0.8 detik
 const BRUSH_STRENGTH   = 1.0;    // Intensitas maksimum brush
 const VELOCITY_SCALE   = 6.0;    // Skala kecepatan kursor → intensitas brush
-const DISPLAY_STRENGTH = 12.0;   // Amplifikasi gradien → kekuatan visual caustic
+const DISPLAY_STRENGTH = 7.0;    // Amplifikasi gradien → kekuatan visual caustic
 const MOVE_TIMEOUT_MS  = 120;    // ms tanpa gerakan → kursor dianggap berhenti
 
 // ---------------------------------------------------------------------------
@@ -189,9 +189,9 @@ const displayFrag = /* glsl */ `
     highlight = pow(highlight, 1.6);
     shadow    = pow(shadow,    1.6);
 
-    // Gunakan nilai center sebagai mask: hanya tampilkan di area yang punya jejak
+    // Gunakan pow(C, 2.0) sebagai mask agar transisi ke pinggir memudar secara eksponensial dan lembut
     // Mencegah artefak di area tanpa displacement
-    float mask = min(C * 25.0, 1.0);
+    float mask = C * C;
 
     // ------------------------------------------------------------------
     // Langkah 4: Edge fade (mencegah artefak di batas canvas)
@@ -220,7 +220,7 @@ const displayFrag = /* glsl */ `
       vec3(0.96, 0.97, 1.00),   // highlight: putih hangat
       step(0.25, highlight / max(highlight + shadow + 0.001, 0.001))
     );
-    float dAlpha = (highlight * 0.80 + shadow * 0.20) * ef * mask;
+    float dAlpha = (highlight * 0.55 + shadow * 0.20) * ef * mask;
 
     // ------------------------------------------------------------------
     // Langkah 6: Interpolasi tema + iridescence halus
@@ -268,6 +268,11 @@ export default function RippleShader({ isDarkMode }: RippleShaderProps) {
     vy: 0,     // kecepatan vertikal
     lastMoveMs: 0, // timestamp terakhir kali mouse bergerak
   });
+
+  const isDarkRef = useRef(isDarkMode);
+  useEffect(() => {
+    isDarkRef.current = isDarkMode;
+  }, [isDarkMode]);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -419,7 +424,7 @@ export default function RippleShader({ isDarkMode }: RippleShaderProps) {
       }
 
       // Tetap update tema meski tidak ada riak
-      const tgt = isDarkMode ? 1.0 : 0.0;
+      const tgt = isDarkRef.current ? 1.0 : 0.0;
       displayUniforms.uIsDark.value += (tgt - displayUniforms.uIsDark.value) * 0.08;
       return; // ← tidak ada render FBO
     }
@@ -435,6 +440,13 @@ export default function RippleShader({ isDarkMode }: RippleShaderProps) {
       brushMat.uniforms.uMouse.value.set(m.x, m.y);
       brushMat.uniforms.uStrength.value = Math.min(speed * VELOCITY_SCALE, BRUSH_STRENGTH);
       brushMat.uniforms.uAspect.value   = size.width / size.height;
+
+      // Hitung radius kuas secara dinamis berdasarkan kecepatan gerak dan tema gelap
+      const maxRadius = isDarkRef.current ? 0.045 : 0.065;
+      const minRadius = isDarkRef.current ? 0.015 : 0.02;
+      const speedFactor = Math.min(speed / 0.05, 1.0);
+      brushMat.uniforms.uRadius.value = minRadius + (maxRadius - minRadius) * speedFactor;
+
       brushMat.visible = true;
     } else {
       brushMat.visible = false;
@@ -459,7 +471,7 @@ export default function RippleShader({ isDarkMode }: RippleShaderProps) {
     // PASS 2 — Kirim displacement map ke display shader
     displayUniforms.uDisp.value = fbos.read.texture;
 
-    const tgt = isDarkMode ? 1.0 : 0.0;
+    const tgt = isDarkRef.current ? 1.0 : 0.0;
     displayUniforms.uIsDark.value += (tgt - displayUniforms.uIsDark.value) * 0.08;
   });
 

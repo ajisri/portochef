@@ -56,7 +56,7 @@ export default function Preloader() {
           {/* Telur diposisikan absolute terhadap div teks agar tidak merusak posisi vertikal tengah layar */}
           <div className="the-egg absolute -top-10 w-1.5 h-1.5 bg-foreground/10 transition-colors duration-500 rounded-full"></div>
           <h1 className="the-name text-2xl md:text-4xl text-foreground transition-colors duration-500 font-serif font-light tracking-widest uppercase">
-            Arnold Poernomo
+            Nama Lengkap
           </h1>
         </div>
       </div>

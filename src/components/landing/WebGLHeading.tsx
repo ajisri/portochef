@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useMemo, useCallback } from 'react';
+import React, { useRef, useMemo, useCallback, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -24,6 +24,11 @@ export default function WebGLHeading({
   
   const { viewport } = useThree();
 
+  const isDarkRef = useRef(isDarkMode);
+  useEffect(() => {
+    isDarkRef.current = isDarkMode;
+  }, [isDarkMode]);
+
   // Responsive scaling calculation to match CSS
   // Roughly matches CSS font-size: clamp(2.5rem, 13vw (mobile)/6vw(desktop), 5rem)
   const isMobile = viewport.width < 768; // Roughly assuming R3F viewport units map to pixels conceptually if setup 1:1, but they don't.
@@ -45,7 +50,7 @@ export default function WebGLHeading({
     // Update the shared uniforms object directly. 
     // Since these were passed by reference into onBeforeCompile, all 3 Text materials will update.
     uniforms.uTime.value = state.clock.elapsedTime;
-    const targetColor = new THREE.Color(isDarkMode ? '#FAFAFA' : '#111111');
+    const targetColor = new THREE.Color(isDarkRef.current ? '#FAFAFA' : '#111111');
     uniforms.uColor.value.lerp(targetColor, 0.05);
     uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
   });

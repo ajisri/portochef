@@ -313,7 +313,7 @@ export default function HeroSection() {
     <section
       id="hero"
       ref={containerRef}
-      className="relative w-full min-h-screen bg-background text-foreground transition-colors duration-500 overflow-hidden antialiased flex flex-col pt-32 pb-24 md:pb-32 px-6 md:px-16"
+      className="relative w-full min-h-screen bg-background text-foreground transition-colors duration-500 overflow-hidden antialiased flex flex-col pt-24 pb-20 md:pt-28 md:pb-28 px-6 md:px-16"
       aria-label="Hero Introduction"
     >
 
@@ -372,9 +372,9 @@ export default function HeroSection() {
         {/* LEFT COLUMN: Heading + Principle 01                             */}
         {/*                                                                  */}
         <div
-          className="md:col-start-2 md:col-span-5 flex flex-col justify-start pt-12 md:pt-20 z-20 water-ripple-hover"
+          className="md:col-start-2 md:col-span-5 flex flex-col justify-start pt-12 md:pt-20 z-20"
         >
-          <div className="overflow-hidden mb-8 md:mb-12">
+          <div className="overflow-hidden mb-8 md:mb-12 water-ripple-hover">
             <span className="overline-reveal block text-[10px] md:text-[11px] tracking-[0.4em] uppercase text-ink-theme transition-colors duration-500 font-semibold">
               {t.label}
             </span>
@@ -388,7 +388,7 @@ export default function HeroSection() {
             </h1>
           </div>
 
-          <article ref={bio1Ref} className="bio-principle mt-12 md:mt-24 flex flex-col gap-3 max-w-[280px]">
+          <article ref={bio1Ref} className="bio-principle mt-12 md:mt-24 flex flex-col gap-3 max-w-[280px] water-ripple-hover">
             <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p1Label}</h3>
             <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
               {t.p1Desc}
@@ -398,12 +398,12 @@ export default function HeroSection() {
 
         {/* RIGHT COLUMN: Image + Principle 02                              */}
         <div className="md:col-start-8 md:col-span-5 relative flex flex-col justify-center items-end h-full pt-24 md:pt-0">
-          <div ref={imageContainerRef} className="w-full max-w-[450px]">
-            <figure className="hero-image-mask w-full aspect-[4/5] relative">
+          <div ref={imageContainerRef} className="w-full max-w-[280px] sm:max-w-[340px] md:max-w-[360px] lg:max-w-[380px] xl:max-w-[420px]">
+            <figure className="hero-image-mask w-full aspect-[4/5] max-h-[35vh] md:max-h-[40vh] lg:max-h-[44vh] ml-auto relative">
               <div ref={imageInnerRef} className="hero-image-inner absolute inset-0 w-full h-full">
                 <ImageRipple
                   src="/chef_portrait.png"
-                  alt="Chef Arnold Poernomo"
+                  alt="Chef Nama Lengkap"
                 />
               </div>
             </figure>
@@ -411,7 +411,7 @@ export default function HeroSection() {
 
           <article
             ref={bio2Ref}
-            className="bio-principle mt-12 md:mt-16 mr-auto md:mr-12 flex flex-col gap-3 max-w-[280px] water-ripple-hover"
+            className="bio-principle mt-8 md:mt-10 mr-auto md:mr-12 flex flex-col gap-3 max-w-[280px] water-ripple-hover"
           >
             <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p2Label}</h3>
             <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
@@ -422,9 +422,9 @@ export default function HeroSection() {
 
         {/* BOTTOM-LEFT: Principle 03                                       */}
         <div
-          className="md:col-start-2 md:col-span-3 flex items-end pb-12 md:pb-0 water-ripple-hover"
+          className="md:col-start-2 md:col-span-3 flex items-end pb-12 md:pb-0"
         >
-          <article ref={bio3Ref} className="bio-principle flex flex-col gap-3 max-w-[280px]">
+          <article ref={bio3Ref} className="bio-principle flex flex-col gap-3 max-w-[280px] water-ripple-hover">
             <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p3Label}</h3>
             <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
               {t.p3Desc}
