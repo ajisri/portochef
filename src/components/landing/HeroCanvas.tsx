@@ -6,7 +6,6 @@ import { Preload } from '@react-three/drei';
 import * as THREE from 'three';
 import RippleShader from './RippleShader';
 import ElectricStrings from './ElectricStrings';
-import WebGLHeading from './WebGLHeading';
 import { useMouseRipples } from './useMouseRipples';
 
 /**
@@ -40,14 +39,8 @@ function SceneContent({ isDarkMode, mousePos, connectionRefs, targetRef, heading
   return (
     <>
       <RippleShader isDarkMode={isDarkMode} rippleUniforms={rippleUniforms} />
-      <WebGLHeading 
-        isDarkMode={isDarkMode} 
-        rippleUniforms={rippleUniforms} 
-        heading1={headings.h1}
-        heading2={headings.h2}
-        heading3={headings.h3}
-      />
-      <ElectricStrings connectionRefs={connectionRefs} targetRef={targetRef} isDarkMode={isDarkMode} />
+
+      {/* <ElectricStrings connectionRefs={connectionRefs} targetRef={targetRef} isDarkMode={isDarkMode} /> */}
       <Preload all />
     </>
   );

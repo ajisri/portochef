@@ -145,7 +145,7 @@ function ImageRippleShader({ imageUrl }: { imageUrl: string }) {
       // First, calculate the distortion
 
       // Liquid Ripple Distortion Algorithm (Homunculus style UV bending)
-      float waveSpeed = uTime * 2.5;
+      float waveSpeed = mod(uTime * 2.5, 6.2831853);
       float waveFrequency = 15.0;
       
       // Multiply by uMoving so distortion completely stops when cursor is still
@@ -160,8 +160,9 @@ function ImageRippleShader({ imageUrl }: { imageUrl: string }) {
       );
 
       // Add secondary noise layer for organic flow
-      distortion.x += sin(vUv.y * 10.0 + uTime) * 0.015 * falloff * uHover * uMoving;
-      distortion.y += cos(vUv.x * 10.0 + uTime) * 0.015 * falloff * uHover * uMoving;
+      float tSec = mod(uTime, 6.2831853);
+      distortion.x += sin(vUv.y * 10.0 + tSec) * 0.015 * falloff * uHover * uMoving;
+      distortion.y += cos(vUv.x * 10.0 + tSec) * 0.015 * falloff * uHover * uMoving;
 
       // 4. Apply distortion to the CONTAINER coordinates (paddedUv)
       // This bends the actual boundary of the 4/5 box

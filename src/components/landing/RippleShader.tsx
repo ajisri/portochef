@@ -303,22 +303,24 @@ export default function RippleShader({ isDarkMode }: RippleShaderProps) {
     write: THREE.WebGLRenderTarget;
   } | null>(null);
 
-  if (!fboRef.current) {
+  useEffect(() => {
     const opt: THREE.RenderTargetOptions = {
       minFilter: THREE.LinearFilter,
       magFilter: THREE.LinearFilter,
       format:    THREE.RGBAFormat,
-      type:      THREE.FloatType,
+      type:      THREE.UnsignedByteType,
     };
-    fboRef.current = {
-      read:  new THREE.WebGLRenderTarget(FBO_SIZE, FBO_SIZE, opt),
-      write: new THREE.WebGLRenderTarget(FBO_SIZE, FBO_SIZE, opt),
-    };
-  }
+    
+    const read = new THREE.WebGLRenderTarget(FBO_SIZE, FBO_SIZE, opt);
+    const write = new THREE.WebGLRenderTarget(FBO_SIZE, FBO_SIZE, opt);
+    
+    fboRef.current = { read, write };
 
-  useEffect(() => {
-    const fbo = fboRef.current;
-    return () => { fbo?.read.dispose(); fbo?.write.dispose(); };
+    return () => {
+      read.dispose();
+      write.dispose();
+      fboRef.current = null;
+    };
   }, []);
 
   // -------------------------------------------------------------------------
@@ -342,7 +344,8 @@ export default function RippleShader({ isDarkMode }: RippleShaderProps) {
       depthTest:  false,
       depthWrite: false,
     });
-    const feedbackQuad = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), feedbackMat);
+    const feedbackGeom = new THREE.PlaneGeometry(1, 1);
+    const feedbackQuad = new THREE.Mesh(feedbackGeom, feedbackMat);
     feedbackQuad.position.z = -0.1; // Di belakang brush
     scene.add(feedbackQuad);
 
@@ -361,12 +364,23 @@ export default function RippleShader({ isDarkMode }: RippleShaderProps) {
       depthTest:   false,
       depthWrite:  false,
     });
-    const brushQuad = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), brushMat);
+    const brushGeom = new THREE.PlaneGeometry(1, 1);
+    const brushQuad = new THREE.Mesh(brushGeom, brushMat);
     brushQuad.position.z = 0;
     scene.add(brushQuad);
 
-    return { scene, cam, feedbackMat, brushMat };
+    return { scene, cam, feedbackMat, brushMat, feedbackGeom, brushGeom };
   }, []);
+
+  useEffect(() => {
+    return () => {
+      const { feedbackMat, brushMat, feedbackGeom, brushGeom } = offscreen;
+      feedbackMat.dispose();
+      brushMat.dispose();
+      feedbackGeom.dispose();
+      brushGeom.dispose();
+    };
+  }, [offscreen]);
 
   // -------------------------------------------------------------------------
   // Uniform display pass — dibuat sekali, diupdate setiap frame via useFrame
@@ -408,9 +422,10 @@ export default function RippleShader({ isDarkMode }: RippleShaderProps) {
         feedbackMat.uniforms.uPrev.value    = fbos.read.texture;
         feedbackMat.uniforms.uDamping.value = 0.0; // satu frame → bersih
 
+        const prevTarget = gl.getRenderTarget();
         gl.setRenderTarget(fbos.write);
         gl.render(offScene, offCam);
-        gl.setRenderTarget(null);
+        gl.setRenderTarget(prevTarget);
 
         const tmp  = fbos.read;
         fbos.read  = fbos.write;
@@ -460,9 +475,10 @@ export default function RippleShader({ isDarkMode }: RippleShaderProps) {
     // Ini yang membuat splash memudar smooth layaknya riak air sungguhan
     feedbackMat.uniforms.uPrev.value = fbos.read.texture;
 
+    const prevTarget = gl.getRenderTarget();
     gl.setRenderTarget(fbos.write);
     gl.render(offScene, offCam);
-    gl.setRenderTarget(null);
+    gl.setRenderTarget(prevTarget);
 
     const tmp  = fbos.read;
     fbos.read  = fbos.write;

@@ -64,7 +64,7 @@ const electricVertexShader = /* glsl */ `
     vec3 pos = position;
 
     // High frequency electricity noise (chaotic jitter)
-    float timeFast = uTime * 20.0 + uPulseOffset * 10.0; 
+    float timeFast = mod(uTime * 20.0 + uPulseOffset * 10.0, 1000.0); 
     vec3 noisePos = vec3(vUv.x * 25.0, timeFast, 0.0);
     
     // Create jagged displacement
@@ -120,8 +120,10 @@ const electricFragmentShader = /* glsl */ `
     // -----------------------------------------------------------------------
     // Traveling energy pulse
     // -----------------------------------------------------------------------
-    float pulse = sin(vUv.x * 12.0 - uTime * 3.5 + uPulseOffset) * 0.5 + 0.5;
-    float fastPulse = sin(vUv.x * 24.0 + uTime * 6.0 + uPulseOffset * 2.0) * 0.5 + 0.5;
+    float t1 = mod(uTime * 3.5 - uPulseOffset, 6.2831853);
+    float pulse = sin(vUv.x * 12.0 - t1) * 0.5 + 0.5;
+    float t2 = mod(uTime * 6.0 + uPulseOffset * 2.0, 6.2831853);
+    float fastPulse = sin(vUv.x * 24.0 + t2) * 0.5 + 0.5;
     float energy = mix(0.5, 1.0, pulse * 0.6 + fastPulse * 0.4);
 
     // Endpoint fade
@@ -137,7 +139,10 @@ const electricFragmentShader = /* glsl */ `
 // ---------------------------------------------------------------------------
 // Helper: DOM to World Coordinate Mapping (Allocation-Free)
 // ---------------------------------------------------------------------------
-const domToWorld = (el: HTMLElement, target: THREE.Vector3): void => {
+const domToWorld = (el: HTMLElement, target: THREE.Vector3): boolean => {
+  if (typeof window === 'undefined' || window.innerHeight === 0 || window.innerWidth === 0) {
+    return false;
+  }
   const rect = el.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
@@ -149,6 +154,7 @@ const domToWorld = (el: HTMLElement, target: THREE.Vector3): void => {
   const scale = visibleHeight / window.innerHeight;
   
   target.set(sx * scale, sy * scale, 0);
+  return true;
 };
 
 // ---------------------------------------------------------------------------
@@ -328,8 +334,9 @@ function ElectricString({
     // Real-time endpoint tracking (Parallax & Floating Animation)
     // -----------------------------------------------------------------------
     const p = curve.points;
-    domToWorld(sourceRef.current, p[0]);
-    domToWorld(targetRef.current, p[4]);
+    const ok1 = domToWorld(sourceRef.current, p[0]);
+    const ok2 = domToWorld(targetRef.current, p[4]);
+    if (!ok1 || !ok2) return;
 
     // -----------------------------------------------------------------------
     // Wind-displaced control points using simplex noise (Allocation-free lerps)

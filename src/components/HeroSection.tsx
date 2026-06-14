@@ -24,10 +24,7 @@ const contentMap = {
         Ditempa oleh realitas, dipahat oleh kedisiplinan sejak usia 14 tahun.
       </>
     ),
-    p2Label: '02 / The Process',
-    p2Desc: 'Memulai dari bawah di dapur komersial. Mempelajari alur kerja, efisiensi, dan pentingnya menjaga konsistensi setiap hari.',
-    p3Label: '03 / The Ethos',
-    p3Desc: 'Makanan yang baik tidak membutuhkan narasi berlebihan. Biarkan kualitas bahan dan eksekusi yang berbicara.',
+    cta: 'Eksplorasi Karya',
     explore: 'Eksplorasi',
   },
   en: {
@@ -42,10 +39,7 @@ const contentMap = {
         Forged by reality, sculpted by discipline since the age of 14.
       </>
     ),
-    p2Label: '02 / The Process',
-    p2Desc: 'Starting from the bottom in commercial kitchens. Understanding workflow, efficiency, and the importance of daily consistency.',
-    p3Label: '03 / The Ethos',
-    p3Desc: 'Good food requires no excessive narrative. Let the quality of ingredients and clean execution speak for themselves.',
+    cta: 'Explore Portfolio',
     explore: 'Explore',
   }
 };
@@ -142,6 +136,7 @@ function WaterRippleFilter({ filterRef }: { filterRef: React.RefObject<SVGFEDisp
     </svg>
   );
 }
+
 /**
  * @component HeroSection
  */
@@ -166,71 +161,90 @@ export default function HeroSection() {
   const imageInnerRef = useRef<HTMLDivElement>(null);
   const magneticDotRef = useRef<HTMLDivElement>(null);
 
-  // Electric string source refs
+  // Layout refs
   const bio1Ref = useRef<HTMLElement>(null);
-  const bio2Ref = useRef<HTMLElement>(null);
-  const bio3Ref = useRef<HTMLElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLAnchorElement>(null);
 
   const connectionRefs = useMemo(() => ([
     { id: 'heading', ref: headingRef },
     { id: 'bio1',    ref: bio1Ref },
-    { id: 'bio2',    ref: bio2Ref },
-    { id: 'bio3',    ref: bio3Ref },
     { id: 'scroll',  ref: scrollIndicatorRef },
+    { id: 'cta',     ref: ctaRef },
   ]), []);
 
   useEffect(() => { setMounted(true); }, []);
 
   // -------------------------------------------------------------------------
-  // GSAP entrance + floating animations
+  // GSAP entrance + floating animations (GPU Accelerated)
   // -------------------------------------------------------------------------
   useGSAP(() => {
     if (!mounted) return;
 
+    // We use a timeline to safely mount the SVG filter ONLY after animation promise completes
+    // to prevent main-thread layout thrashing.
+    const tl = gsap.timeline({
+      onComplete: () => {
+        headingRef.current?.classList.add('water-ripple-hover');
+        bio1Ref.current?.classList.add('water-ripple-hover');
+        ctaRef.current?.classList.add('water-ripple-hover');
+      }
+    });
+
     // Grid lines entrance
-    gsap.fromTo('.vertical-grid-line',
+    tl.fromTo('.vertical-grid-line',
       { scaleY: 0, transformOrigin: 'top' },
-      { scaleY: 1, duration: 2.8, ease: 'expo.inOut', stagger: 0.1, delay: 2.5 }
+      { scaleY: 1, duration: 2.8, ease: 'expo.inOut', stagger: 0.1 },
+      2.5
     );
 
     // Heading liquid entrance
-    gsap.fromTo('.main-heading-line',
-      { y: '125%', skewY: 10, rotationZ: 3, opacity: 0 },
-      { y: '0%', skewY: 0, rotationZ: 0, opacity: 1, duration: 2, ease: 'expo.out', delay: 3.2, stagger: 0.15 }
+    tl.fromTo('.main-heading-line',
+      { y: '125%', opacity: 0 },
+      { y: '0%', opacity: 1, duration: 2, ease: 'expo.out', stagger: 0.15 },
+      3.2
     );
 
-    // Bio principles reveal
-    gsap.fromTo('.bio-principle',
-      { opacity: 0, y: 60, rotationX: -20 },
-      { opacity: 1, y: 0, rotationX: 0, duration: 1.8, ease: 'power4.out', stagger: 0.25, delay: 3.6 }
+    // Bio principle reveal
+    tl.fromTo('.bio-principle',
+      { opacity: 0, y: 60 },
+      { opacity: 1, y: 0, duration: 1.8, ease: 'power4.out' },
+      3.6
     );
 
-    // Image mask reveal
-    gsap.fromTo('.hero-image-mask',
+    // Primary CTA reveal
+    tl.fromTo('.hero-cta',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1.5, ease: 'power3.out' },
+      3.8
+    );
+
+    // Image mask reveal (using clipPath briefly, then cleared)
+    tl.fromTo('.hero-image-mask',
       { clipPath: 'inset(100% 0% 0% 0%)' },
       { 
         clipPath: 'inset(0% 0% 0% 0%)', 
         duration: 2.6, 
         ease: 'expo.inOut', 
-        delay: 3.0,
         onComplete: () => gsap.set('.hero-image-mask', { clearProps: 'clipPath' })
-      }
+      },
+      3.0
     );
-    gsap.fromTo('.hero-image-inner',
+    tl.fromTo('.hero-image-inner',
       { scale: 1.4, yPercent: 20 },
-      { scale: 1, yPercent: 0, duration: 3, ease: 'expo.inOut', delay: 3.0 }
+      { scale: 1, yPercent: 0, duration: 3, ease: 'expo.inOut' },
+      3.0
     );
-    gsap.fromTo('.hero-image-inner',
+    tl.fromTo('.hero-image-inner',
       { filter: 'blur(24px)' },
-      { filter: 'blur(0px)', duration: 1.5, ease: 'power2.out', delay: 5.2 }
+      { filter: 'blur(0px)', duration: 1.5, ease: 'power2.out' },
+      5.2
     );
 
     // Gentle floating loop
-    gsap.to(['.main-heading-line', '.bio-principle', '.hero-image-mask', '.scroll-indicator'], {
+    gsap.to(['.main-heading-line', '.bio-principle', '.hero-image-mask', '.scroll-indicator', '.hero-cta'], {
       y: '-=15',
-      rotationZ: () => Math.random() * 2 - 1,
       duration: 3,
       yoyo: true,
       repeat: -1,
@@ -247,10 +261,15 @@ export default function HeroSection() {
   useEffect(() => {
     if (!mounted) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      lastMoveMs.current = performance.now();
-      
-      const { clientX, clientY } = e;
+    let ticking = false;
+    let cachedEvent: MouseEvent | null = null;
+
+    const updateParallax = () => {
+      if (!cachedEvent) {
+        ticking = false;
+        return;
+      }
+      const { clientX, clientY } = cachedEvent;
       const { innerWidth, innerHeight } = window;
       const nx = (clientX / innerWidth) * 2 - 1;
       const ny = (clientY / innerHeight) * 2 - 1;
@@ -273,6 +292,16 @@ export default function HeroSection() {
           gsap.to(dot, { x: 0, y: 0, scale: 1, duration: 1.2, ease: 'elastic.out(1, 0.3)' });
         }
       }
+      ticking = false;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      lastMoveMs.current = performance.now();
+      cachedEvent = e;
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
     };
 
     let animationFrameId: number;
@@ -280,13 +309,10 @@ export default function HeroSection() {
       const timeSinceMove = performance.now() - lastMoveMs.current;
       const isMoving = timeSinceMove < 150;
       
-      // Calculate target scale. When moving, it breathes between 6 and 14 based on time.
-      // When stopped, it drops to 0.
       const timeSec = performance.now() / 1000;
       const breathingScale = 10 + Math.sin(timeSec * 1.5) * 4; 
       const targetScale = isMoving ? breathingScale : 0;
 
-      // Smooth lerp for scale
       currentScale.current += (targetScale - currentScale.current) * 0.1;
 
       if (filterRef.current) {
@@ -317,15 +343,10 @@ export default function HeroSection() {
       aria-label="Hero Introduction"
     >
 
-      {/* ------------------------------------------------------------------ */}
-      {/* SVG filter definition — rendered client-side only to avoid SSR    */}
-      {/* hydration mismatch with SVG SMIL animate elements                  */}
-      {/* ------------------------------------------------------------------ */}
+      {/* SVG filter definition */}
       {mounted && <WaterRippleFilter filterRef={filterRef} />}
 
-      {/* ------------------------------------------------------------------ */}
-      {/* WebGL ripple shader — background caustic layer                     */}
-      {/* ------------------------------------------------------------------ */}
+      {/* WebGL ripple shader — background caustic layer */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <HeroCanvas 
           connectionRefs={connectionRefs} 
@@ -336,16 +357,10 @@ export default function HeroSection() {
 
       <div className="grain-overlay" aria-hidden="true"></div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Overlay ripple layer removed - Text is now in WebGL                */}
-      {/* ------------------------------------------------------------------ */}
       <div className="absolute inset-0 z-20 pointer-events-none" style={{ mixBlendMode: 'overlay', opacity: 0.6 }}>
-        {/* Intentionally left empty to preserve structure but remove duplicate WebGL context */}
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Swiss Precision Grid                                               */}
-      {/* ------------------------------------------------------------------ */}
+      {/* Swiss Precision Grid */}
       <div className="absolute inset-0 w-full h-full pointer-events-none px-6 md:px-16 flex z-0">
         {[8.333333, 25, 33.333333, 33.333333].map((width, i) => (
           <div
@@ -369,73 +384,72 @@ export default function HeroSection() {
       {/* ------------------------------------------------------------------ */}
       <div className="w-full h-full grid grid-cols-1 md:grid-cols-12 gap-0 relative z-10 flex-grow">
 
-        {/* LEFT COLUMN: Heading + Principle 01                             */}
-        {/*                                                                  */}
+        {/* LEFT COLUMN: Heading + Principle 01 + CTA                        */}
         <div
-          className="md:col-start-2 md:col-span-5 flex flex-col justify-start pt-12 md:pt-20 z-20"
+          className="md:col-start-2 md:col-span-5 flex flex-col justify-center pt-12 md:pt-0 z-20 h-full"
         >
-          <div className="overflow-hidden mb-8 md:mb-12 water-ripple-hover">
+          <div className="overflow-hidden mb-8 md:mb-10">
             <span className="overline-reveal block text-[10px] md:text-[11px] tracking-[0.4em] uppercase text-ink-theme transition-colors duration-500 font-semibold">
               {t.label}
             </span>
           </div>
 
-          <div ref={headingRef}>
-            <h1 className="font-sans font-medium text-foreground transition-colors duration-500 leading-[0.85] tracking-[-0.04em] text-[13vw] md:text-[6vw] md:-ml-[0.05em] opacity-0 select-none pointer-events-none">
-              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left">{t.heading1}</div></div>
-              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left">{t.heading2}</div></div>
-              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left">{t.heading3}</div></div>
+          <div ref={headingRef} className="transition-all duration-700">
+            {/* HTML heading exposed permanently. will-change optimizes GPU paint */}
+            <h1 className="font-sans font-medium text-foreground transition-colors duration-500 leading-[0.85] tracking-[-0.04em] text-[13vw] md:text-[6vw] md:-ml-[0.05em]">
+              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left will-change-[transform,opacity]">{t.heading1}</div></div>
+              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left will-change-[transform,opacity]">{t.heading2}</div></div>
+              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left will-change-[transform,opacity]">{t.heading3}</div></div>
             </h1>
           </div>
 
-          <article ref={bio1Ref} className="bio-principle mt-12 md:mt-24 flex flex-col gap-3 max-w-[280px] water-ripple-hover">
+          {/* Quiet Luxury: Only one powerful micro-narrative kept above the fold */}
+          <article ref={bio1Ref} className="bio-principle mt-10 md:mt-16 flex flex-col gap-3 max-w-[280px] will-change-[transform,opacity]">
             <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p1Label}</h3>
             <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
               {t.p1Desc}
             </p>
           </article>
+
+          {/* Primary Call To Action */}
+          <div className="hero-cta mt-10 will-change-[transform,opacity] w-max">
+            <Magnetic strength={0.2}>
+              <a
+                ref={ctaRef}
+                href="#about"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const lenis = (window as any).lenis;
+                  if (lenis) lenis.scrollTo('#about');
+                  else document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="inline-flex items-center justify-center px-8 py-4 text-[11px] tracking-[0.2em] uppercase font-bold text-background bg-foreground rounded-full transition-transform duration-500 hover:scale-105 active:scale-95 shadow-lg group"
+              >
+                {t.cta}
+              </a>
+            </Magnetic>
+          </div>
         </div>
 
-        {/* RIGHT COLUMN: Image + Principle 02                              */}
-        <div className="md:col-start-8 md:col-span-5 relative flex flex-col justify-center items-end h-full pt-24 md:pt-0">
-          <div ref={imageContainerRef} className="w-full max-w-[280px] sm:max-w-[340px] md:max-w-[360px] lg:max-w-[380px] xl:max-w-[420px]">
-            <figure className="hero-image-mask w-full aspect-[4/5] max-h-[35vh] md:max-h-[40vh] lg:max-h-[44vh] ml-auto relative">
-              <div ref={imageInnerRef} className="hero-image-inner absolute inset-0 w-full h-full">
+        {/* RIGHT COLUMN: Image with -scale-x-100 (Horizontal Flip)            */}
+        <div className="md:col-start-8 md:col-span-4 relative flex flex-col justify-center items-end h-full pt-24 md:pt-0 pb-12 md:pb-0 z-10">
+          <div ref={imageContainerRef} className="w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] xl:max-w-[400px]">
+            {/* Aspect ratio changed to 2/3 for editorial look. -scale-x-100 to flip gaze leftward */}
+            <figure className="hero-image-mask w-full aspect-[2/3] max-h-[60vh] ml-auto relative overflow-hidden rounded-2xl border border-foreground/5 shadow-md -scale-x-100">
+              <div ref={imageInnerRef} className="hero-image-inner absolute inset-0 w-full h-full will-change-[transform,filter]">
                 <ImageRipple
                   src="/chef_portrait.png"
-                  alt="Chef Nama Lengkap"
+                  alt="Chef Portrait"
                 />
               </div>
             </figure>
           </div>
-
-          <article
-            ref={bio2Ref}
-            className="bio-principle mt-8 md:mt-10 mr-auto md:mr-12 flex flex-col gap-3 max-w-[280px] water-ripple-hover"
-          >
-            <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p2Label}</h3>
-            <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
-              {t.p2Desc}
-            </p>
-          </article>
         </div>
 
-        {/* BOTTOM-LEFT: Principle 03                                       */}
-        <div
-          className="md:col-start-2 md:col-span-3 flex items-end pb-12 md:pb-0"
-        >
-          <article ref={bio3Ref} className="bio-principle flex flex-col gap-3 max-w-[280px] water-ripple-hover">
-            <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p3Label}</h3>
-            <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
-              {t.p3Desc}
-            </p>
-          </article>
-        </div>
-
-        {/* Scroll Indicator                                                */}
+        {/* Scroll Indicator */}
         <div
           ref={scrollIndicatorRef}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 water-ripple-hover"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 water-ripple-hover scroll-indicator"
         >
           <Magnetic strength={0.3}>
             <a
