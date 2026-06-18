@@ -137,45 +137,46 @@ function ImageRippleShader({ imageUrl }: { imageUrl: string }) {
       // (1.3 - 1.0) / 2 / 1.3 = 0.11538 to 1.0 - 0.11538 = 0.88461.
       
       float scale = 1.3;
-      float ratio = 1.0 / scale;
+      float imageScale = 1.04; // 4% overscan to guarantee no idle transparent borders
+      float ratio = imageScale / scale;
       float pad = (1.0 - ratio) / 2.0;
       vec2 paddedUv = (vUv - pad) / ratio;
       
       // 3. Object-fit cover logic will be applied LATER
       // First, calculate the distortion
 
-      // Liquid Ripple Distortion Algorithm (Homunculus style UV bending)
-      float waveSpeed = mod(uTime * 2.5, 6.2831853);
-      float waveFrequency = 15.0;
-      
-      // Multiply by uMoving so distortion completely stops when cursor is still
-      float dist = distance(pos, mousePos);
-      float rippleRadius = mix(0.0, 0.45, uHover);
-      float falloff = smoothstep(rippleRadius, 0.0, dist);
-      float distortionIntensity = 0.05 * falloff * uHover * uMoving; 
+      // Liquid Ripple Distortion Algorithm (Radial wave pushing in all directions)
+      vec2 dir = pos - mousePos;
+      float len = length(dir);
+      vec2 dirNorm = (len > 0.0001) ? dir / len : vec2(0.0);
 
-      vec2 distortion = vec2(
-        sin(dist * waveFrequency - waveSpeed) * distortionIntensity,
-        cos(dist * waveFrequency - waveSpeed) * distortionIntensity
-      );
+      float waveSpeed = mod(uTime * 4.5, 6.2831853);
+      float waveFrequency = 20.0;
+      
+      float dist = len;
+      float rippleRadius = mix(0.0, 0.75, uHover);
+      float falloff = smoothstep(rippleRadius, 0.0, dist);
+
+      // We allow the edges of the image to warp and wave (as shown in the user's example image)
+      float distortionIntensity = 0.12 * falloff * uHover * uMoving; 
+
+      vec2 distortion = dirNorm * sin(dist * waveFrequency - waveSpeed) * distortionIntensity;
 
       // Add secondary noise layer for organic flow
       float tSec = mod(uTime, 6.2831853);
-      distortion.x += sin(vUv.y * 10.0 + tSec) * 0.015 * falloff * uHover * uMoving;
-      distortion.y += cos(vUv.x * 10.0 + tSec) * 0.015 * falloff * uHover * uMoving;
+      float noiseWave = sin(paddedUv.y * 15.0 + tSec) * 0.035 * falloff * uHover * uMoving;
+      distortion += dirNorm * noiseWave;
 
       // 4. Apply distortion to the CONTAINER coordinates (paddedUv)
-      // This bends the actual boundary of the 4/5 box
       vec2 distortedPaddedUv = paddedUv + distortion;
 
-      // 5. Bounds Check
-      // If the distorted coordinate falls outside the [0, 1] container, it is empty space
+      // 5. Bounds Check: Discard pixels outside [0, 1] to create the beautiful wavy/liquid edge boundary
       if (distortedPaddedUv.x < 0.0 || distortedPaddedUv.x > 1.0 || distortedPaddedUv.y < 0.0 || distortedPaddedUv.y > 1.0) {
         gl_FragColor = vec4(0.0);
         return;
       }
       
-      // 6. Object-fit cover logic natively in shader applied to the VALID, distorted container area
+      // 6. Object-fit cover logic natively in shader
       vec2 coverRatio = vec2(
         min((uResolution.x / uResolution.y) / (uImageSize.x / uImageSize.y), 1.0),
         min((uResolution.y / uResolution.x) / (uImageSize.y / uImageSize.x), 1.0)
@@ -233,8 +234,8 @@ export default function ImageRipple({
 }) {
   return (
     // Increase container to 130% so pixels can spill outside the normal box
-    <div 
-      className="absolute cursor-crosshair pointer-events-auto" 
+    <div
+      className="absolute cursor-crosshair pointer-events-auto"
       style={{
         width: '130%',
         height: '130%',
@@ -247,7 +248,7 @@ export default function ImageRipple({
         and while the canvas initializes 
       */}
       <img src={src} alt={alt} className="hidden" />
-      
+
       <Canvas
         camera={{ position: [0, 0, 1] }} // Simple orthographic-like setup
         dpr={[1, 2]}

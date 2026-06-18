@@ -184,13 +184,7 @@ export default function HeroSection() {
 
     // We use a timeline to safely mount the SVG filter ONLY after animation promise completes
     // to prevent main-thread layout thrashing.
-    const tl = gsap.timeline({
-      onComplete: () => {
-        headingRef.current?.classList.add('water-ripple-hover');
-        bio1Ref.current?.classList.add('water-ripple-hover');
-        ctaRef.current?.classList.add('water-ripple-hover');
-      }
-    });
+    const tl = gsap.timeline();
 
     // Grid lines entrance
     tl.fromTo('.vertical-grid-line',
@@ -449,7 +443,7 @@ export default function HeroSection() {
         {/* Scroll Indicator */}
         <div
           ref={scrollIndicatorRef}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 water-ripple-hover scroll-indicator"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 scroll-indicator"
         >
           <Magnetic strength={0.3}>
             <a
