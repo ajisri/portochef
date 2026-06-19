@@ -122,3 +122,30 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
 }
+
+@keyframes scrollLine {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  40% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  45% {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+  80% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+}
+
+.animate-scroll-line {
+  animation: scrollLine 2.2s cubic-bezier(0.19, 1, 0.22, 1) infinite;
+}

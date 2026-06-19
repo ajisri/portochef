@@ -29,7 +29,7 @@ export default function CircularBadge({ isHero = false }: CircularBadgeProps) {
   // For Hero, we use a solid color to ensure visibility on the grid/photo
   const containerClasses = isHero 
     ? "relative w-full h-full flex items-center justify-center pointer-events-auto"
-    : "fixed bottom-10 right-10 z-[60] flex items-center justify-center w-28 h-28 md:w-40 md:h-40 mix-blend-difference pointer-events-auto cursor-pointer";
+    : "hidden md:flex fixed bottom-10 right-10 z-[60] items-center justify-center w-28 h-28 md:w-40 md:h-40 mix-blend-difference pointer-events-auto cursor-pointer";
 
   return (
     <a 

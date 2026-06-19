@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { useApp } from '../context/AppContext';
 import Magnetic from './Magnetic';
@@ -17,7 +18,7 @@ const contentMap = {
     heading1: 'Dari satu dapur di Surabaya —',
     heading2: 'ke ekosistem kuliner yang bisa',
     heading3: 'direplikasi ribuan kali.',
-    p1Label: 'Dari Mana Semua Ini Dimulai',
+    p1Label: 'Dari mana semua ini dimulai',
     p1Desc: (
       <>
         Usia 14 tahun, saya berdiri untuk pertama kali di dapur profesional. Bukan sebagai pilihan — tapi sebagai keharusan.<br />
@@ -33,7 +34,7 @@ const contentMap = {
     heading1: 'From one kitchen in Surabaya —',
     heading2: 'to a culinary ecosystem that',
     heading3: 'can be replicated thousands of times.',
-    p1Label: 'Where It All Began',
+    p1Label: 'Where it all began',
     p1Desc: (
       <>
         At 14, I stood in a professional kitchen for the first time. Not as a choice — but as a necessity.<br />
@@ -183,6 +184,7 @@ export default function HeroSection() {
   // -------------------------------------------------------------------------
   useGSAP(() => {
     if (!mounted) return;
+    gsap.registerPlugin(ScrollTrigger);
 
     // We use a timeline to safely mount the SVG filter ONLY after animation promise completes
     // to prevent main-thread layout thrashing.
@@ -247,6 +249,17 @@ export default function HeroSection() {
       ease: 'sine.inOut',
       stagger: { each: 0.2, from: 'random' },
       delay: 5.5,
+    });
+
+    // Fade out scroll indicator on scroll
+    gsap.to('.scroll-indicator', {
+      opacity: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top top',
+        end: '20% top',
+        scrub: true,
+      }
     });
 
   }, { scope: containerRef, dependencies: [mounted] });
@@ -382,80 +395,87 @@ export default function HeroSection() {
 
         {/* LEFT COLUMN: Heading + Principle 01 + CTA                        */}
         <div
-          className="md:col-start-2 md:col-span-5 flex flex-col justify-center pt-12 md:pt-0 z-20 h-full"
+          className="order-2 md:order-1 col-span-12 md:col-start-2 md:col-span-5 pr-0 md:pr-12 flex flex-col justify-center pt-12 md:pt-0 z-20 h-full"
         >
-          <div className="overflow-hidden mb-6 md:mb-8">
+          <div className="overflow-hidden mb-3">
             <span className="overline-reveal block text-[11px] md:text-[12px] tracking-[0.05em] text-ink-theme transition-colors duration-500 font-semibold">
               {t.label}
             </span>
           </div>
 
           {/* Identity Anchor */}
-          <div className="flex flex-col gap-1 mb-8">
-            <span className="text-[20px] md:text-[24px] font-serif font-bold text-foreground transition-colors duration-500">
+          <div className="flex flex-col gap-0.5 mb-12">
+            <span className="text-[24px] md:text-[32px] font-serif font-bold text-foreground transition-colors duration-500 leading-tight">
               Chef Arnold Poernomo
             </span>
-            <span className="text-[10px] tracking-[0.2em] uppercase text-foreground/50 font-bold transition-colors duration-500">
+            <span className="text-[11px] md:text-[12px] tracking-[0.05em] text-foreground/50 font-medium transition-colors duration-500">
               {language === 'id' ? 'Arsitek Rasa, Pembangun Ekosistem' : 'Taste Architect, Ecosystem Builder'}
             </span>
           </div>
 
-          <div ref={headingRef} className="transition-all duration-700">
+          <div ref={headingRef} className="transition-all duration-700 mb-12">
             {/* HTML heading exposed permanently. will-change optimizes GPU paint */}
-            <h1 className="font-sans font-medium text-foreground transition-colors duration-500 leading-[1.0] tracking-[-0.04em] text-[8vw] md:text-[3.8vw] md:-ml-[0.05em]">
-              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left will-change-[transform,opacity]">{t.heading1}</div></div>
-              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left will-change-[transform,opacity]">{t.heading2}</div></div>
-              <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left will-change-[transform,opacity]">{t.heading3}</div></div>
+            <h1 className="font-sans font-medium text-foreground transition-colors duration-500 leading-[1.15] tracking-[-0.04em] text-[6.5vw] md:text-[3.8vw]">
+              <div className="overflow-hidden pt-4 pl-4 pb-4 pr-6 w-max -mt-4 -ml-[1.25rem]"><div className="main-heading-line origin-bottom-left will-change-[transform,opacity]">{t.heading1}</div></div>
+              <div className="overflow-hidden pt-4 pl-4 pb-4 pr-6 w-max -mt-4 -ml-[1.25rem]"><div className="main-heading-line origin-bottom-left will-change-[transform,opacity]">{t.heading2}</div></div>
+              <div className="overflow-hidden pt-4 pl-4 pb-4 pr-6 w-max -mt-4 -ml-[1.25rem]"><div className="main-heading-line origin-bottom-left will-change-[transform,opacity]">{t.heading3}</div></div>
             </h1>
           </div>
 
           {/* Quiet Luxury: Only one powerful micro-narrative kept above the fold */}
-          <article ref={bio1Ref} className="bio-principle mt-10 md:mt-16 flex flex-col gap-3 max-w-[340px] will-change-[transform,opacity]">
-            <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p1Label}</h3>
-            <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
+          <article ref={bio1Ref} className="bio-principle mt-0 mb-12 flex flex-col gap-2 max-w-[460px] will-change-[transform,opacity]">
+            <h3 className="text-[12px] tracking-[0.05em] text-foreground transition-colors duration-500 font-medium mb-2">{t.p1Label}</h3>
+            <p className="text-[14.5px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
               {t.p1Desc}
             </p>
           </article>
 
           {/* Primary Call To Actions */}
-          <div className="hero-cta mt-10 flex flex-wrap gap-4 items-center will-change-[transform,opacity]">
-            <Magnetic strength={0.2}>
-              <a
-                ref={ctaRef}
-                href="#about"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const lenis = (window as any).lenis;
-                  if (lenis) lenis.scrollTo('#about');
-                  else document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="inline-flex items-center justify-center px-6 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold text-background bg-foreground rounded-full transition-transform duration-500 hover:scale-105 active:scale-95 shadow-lg group"
-              >
-                {t.ctaJourney}
-              </a>
-            </Magnetic>
-            <Magnetic strength={0.2}>
-              <a
-                href="#contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const lenis = (window as any).lenis;
-                  if (lenis) lenis.scrollTo('#contact');
-                  else document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="inline-flex items-center justify-center px-6 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold text-foreground bg-transparent border border-foreground/30 rounded-full transition-all duration-500 hover:bg-foreground/5 hover:border-foreground active:scale-95 group"
-              >
-                {t.ctaCollaborate}
-              </a>
-            </Magnetic>
+          <div className="hero-cta flex flex-col gap-3.5 items-start will-change-[transform,opacity]">
+            <div className="flex flex-wrap gap-4 items-center">
+              <Magnetic strength={0.2}>
+                <a
+                  ref={ctaRef}
+                  href="#about"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const lenis = (window as any).lenis;
+                    if (lenis) lenis.scrollTo('#about');
+                    else document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center justify-center px-8 py-4 text-[12px] tracking-[0.2em] uppercase font-bold text-background bg-foreground rounded-full transition-transform duration-500 hover:scale-105 active:scale-95 shadow-lg group"
+                >
+                  {t.ctaJourney}
+                </a>
+              </Magnetic>
+              <Magnetic strength={0.2}>
+                <a
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const lenis = (window as any).lenis;
+                    if (lenis) lenis.scrollTo('#contact');
+                    else document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center justify-center px-6 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold text-foreground/60 bg-transparent border border-foreground/20 rounded-full transition-all duration-500 hover:text-foreground hover:bg-foreground/5 hover:border-foreground/50 active:scale-95 group"
+                >
+                  {t.ctaCollaborate}
+                </a>
+              </Magnetic>
+            </div>
+            <span className="text-[11px] text-foreground/40 font-medium tracking-wide mt-3">
+              {language === 'id' 
+                ? '* Untuk brand, media, dan undangan berbicara' 
+                : '* For brands, media, and speaking invitations'}
+            </span>
           </div>
         </div>
 
         {/* RIGHT COLUMN: Image with -scale-x-100 (Horizontal Flip)            */}
-        <div className="md:col-start-8 md:col-span-4 relative flex flex-col justify-center items-end h-full pt-24 md:pt-0 pb-12 md:pb-0 z-10">
-          <div ref={imageContainerRef} className="w-full max-w-[280px] sm:max-w-[340px] md:max-w-[380px] xl:max-w-[400px]">
+        <div className="order-1 md:order-2 col-span-12 md:col-start-7 md:col-span-5 relative flex flex-col justify-start items-end h-auto md:h-full pt-16 md:pt-48 pb-12 md:pb-0 z-10">
+          <div ref={imageContainerRef} className="w-full max-w-none md:max-w-[400px] xl:max-w-[400px]">
             {/* Aspect ratio changed to 2/3 for editorial look. -scale-x-100 to flip gaze leftward */}
-            <figure className="hero-image-mask w-full aspect-[2/3] max-h-[60vh] ml-auto relative overflow-hidden rounded-2xl border border-foreground/5 shadow-md -scale-x-100">
+            <figure className="hero-image-mask w-full aspect-[3/4] md:aspect-[2/3] max-h-[50vh] md:max-h-[60vh] ml-auto relative overflow-hidden rounded-sm border border-foreground/5 shadow-md -scale-x-100">
               <div ref={imageInnerRef} className="hero-image-inner absolute inset-0 w-full h-full will-change-[transform,filter]">
                 <ImageRipple
                   src="/chef_portrait.png"
@@ -483,13 +503,16 @@ export default function HeroSection() {
                   document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="flex flex-col items-center gap-4 group cursor-pointer"
+              className="flex flex-col items-center gap-2 group cursor-pointer"
             >
-              <span className="text-[9px] tracking-[0.4em] uppercase font-bold text-foreground transition-colors duration-500 opacity-40 group-hover:opacity-100 block">
+              <span className="text-[10px] tracking-[0.2em] uppercase font-bold text-foreground transition-colors duration-500 opacity-50 group-hover:opacity-100 flex items-center gap-2">
                 {t.explore}
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="translate-y-[0.5px] transition-transform duration-500 group-hover:translate-y-1">
+                  <path d="M1 3.5L5 7.5L9 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </span>
-              <div className="w-[1px] h-12 bg-foreground/20 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full bg-foreground scale-y-0 group-hover:scale-y-100 origin-top transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]"></div>
+              <div className="w-[1px] h-12 bg-foreground/15 relative overflow-hidden mt-2 mx-auto">
+                <div className="absolute top-0 left-0 w-full h-full bg-foreground animate-scroll-line"></div>
               </div>
             </a>
           </Magnetic>
