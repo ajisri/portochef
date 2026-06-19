@@ -60,9 +60,9 @@ export default function CircularBadge({ isHero = false }: CircularBadgeProps) {
           />
         </defs>
         {/* If Hero, use obsidian (black) to contrast against the white/gray background */}
-        <text className={`text-[8px] uppercase tracking-[0.4em] font-bold ${isHero ? 'fill-[#111111]' : 'fill-white'}`}>
+        <text className={`text-[8px] tracking-[0.25em] font-bold ${isHero ? 'fill-[#111111]' : 'fill-white'}`}>
           <textPath href={`#${pathId}`} startOffset="0%">
-            FORBES 30 UNDER 30 ASIA • GLOBAL RECOGNITION •
+            Forbes 30 Under 30 Asia · Gastronomi · 2017 · Surabaya–Sydney • 
           </textPath>
         </text>
       </svg>

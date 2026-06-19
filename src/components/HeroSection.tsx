@@ -13,34 +13,36 @@ const ImageRipple = dynamic(() => import('./landing/ImageRipple'), { ssr: false 
 
 const contentMap = {
   id: {
-    label: 'Fundamental / 2026',
-    heading1: 'Sederhana,',
-    heading2: 'Terstruktur,',
-    heading3: 'Konsisten.',
-    p1Label: '01 / The Origin',
+    label: 'Forbes 30 Under 30 Asia · Gastronomi · 2017 · Surabaya–Sydney',
+    heading1: 'Dari satu dapur di Surabaya —',
+    heading2: 'ke ekosistem kuliner yang bisa',
+    heading3: 'direplikasi ribuan kali.',
+    p1Label: 'Dari Mana Semua Ini Dimulai',
     p1Desc: (
       <>
-        Surabaya—Sydney.<br />
-        Ditempa oleh realitas, dipahat oleh kedisiplinan sejak usia 14 tahun.
+        Usia 14 tahun, saya berdiri untuk pertama kali di dapur profesional. Bukan sebagai pilihan — tapi sebagai keharusan.<br />
+        Dua puluh tahun kemudian, realitas itulah yang membentuk cara saya membangun bisnis: presisi tanpa kompromi, sistem tanpa birokrasi.
       </>
     ),
-    cta: 'Eksplorasi Karya',
-    explore: 'Eksplorasi',
+    ctaJourney: 'Lihat Perjalanan',
+    ctaCollaborate: 'Ajak Berkolaborasi',
+    explore: 'Ikuti Perjalanannya',
   },
   en: {
-    label: 'Fundamental / 2026',
-    heading1: 'Simple,',
-    heading2: 'Structured,',
-    heading3: 'Consistent.',
-    p1Label: '01 / The Origin',
+    label: 'Forbes 30 Under 30 Asia · Gastronomy · 2017 · Surabaya–Sydney',
+    heading1: 'From one kitchen in Surabaya —',
+    heading2: 'to a culinary ecosystem that',
+    heading3: 'can be replicated thousands of times.',
+    p1Label: 'Where It All Began',
     p1Desc: (
       <>
-        Surabaya—Sydney.<br />
-        Forged by reality, sculpted by discipline since the age of 14.
+        At 14, I stood in a professional kitchen for the first time. Not as a choice — but as a necessity.<br />
+        Twenty years later, that very reality shapes how I build businesses: precision without compromise, systems without bureaucracy.
       </>
     ),
-    cta: 'Explore Portfolio',
-    explore: 'Explore',
+    ctaJourney: 'View Journey',
+    ctaCollaborate: 'Collaborate',
+    explore: 'Follow the Journey',
   }
 };
 
@@ -382,15 +384,25 @@ export default function HeroSection() {
         <div
           className="md:col-start-2 md:col-span-5 flex flex-col justify-center pt-12 md:pt-0 z-20 h-full"
         >
-          <div className="overflow-hidden mb-8 md:mb-10">
-            <span className="overline-reveal block text-[10px] md:text-[11px] tracking-[0.4em] uppercase text-ink-theme transition-colors duration-500 font-semibold">
+          <div className="overflow-hidden mb-6 md:mb-8">
+            <span className="overline-reveal block text-[11px] md:text-[12px] tracking-[0.05em] text-ink-theme transition-colors duration-500 font-semibold">
               {t.label}
+            </span>
+          </div>
+
+          {/* Identity Anchor */}
+          <div className="flex flex-col gap-1 mb-8">
+            <span className="text-[20px] md:text-[24px] font-serif font-bold text-foreground transition-colors duration-500">
+              Chef Arnold Poernomo
+            </span>
+            <span className="text-[10px] tracking-[0.2em] uppercase text-foreground/50 font-bold transition-colors duration-500">
+              {language === 'id' ? 'Arsitek Rasa, Pembangun Ekosistem' : 'Taste Architect, Ecosystem Builder'}
             </span>
           </div>
 
           <div ref={headingRef} className="transition-all duration-700">
             {/* HTML heading exposed permanently. will-change optimizes GPU paint */}
-            <h1 className="font-sans font-medium text-foreground transition-colors duration-500 leading-[0.85] tracking-[-0.04em] text-[13vw] md:text-[6vw] md:-ml-[0.05em]">
+            <h1 className="font-sans font-medium text-foreground transition-colors duration-500 leading-[1.0] tracking-[-0.04em] text-[8vw] md:text-[3.8vw] md:-ml-[0.05em]">
               <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left will-change-[transform,opacity]">{t.heading1}</div></div>
               <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left will-change-[transform,opacity]">{t.heading2}</div></div>
               <div className="overflow-hidden pb-3 w-max"><div className="main-heading-line pr-6 origin-bottom-left will-change-[transform,opacity]">{t.heading3}</div></div>
@@ -398,15 +410,15 @@ export default function HeroSection() {
           </div>
 
           {/* Quiet Luxury: Only one powerful micro-narrative kept above the fold */}
-          <article ref={bio1Ref} className="bio-principle mt-10 md:mt-16 flex flex-col gap-3 max-w-[280px] will-change-[transform,opacity]">
+          <article ref={bio1Ref} className="bio-principle mt-10 md:mt-16 flex flex-col gap-3 max-w-[340px] will-change-[transform,opacity]">
             <h3 className="text-[10px] tracking-[0.2em] uppercase text-foreground transition-colors duration-500 font-bold">{t.p1Label}</h3>
             <p className="text-[14px] text-foreground/70 transition-colors duration-500 leading-relaxed font-medium">
               {t.p1Desc}
             </p>
           </article>
 
-          {/* Primary Call To Action */}
-          <div className="hero-cta mt-10 will-change-[transform,opacity] w-max">
+          {/* Primary Call To Actions */}
+          <div className="hero-cta mt-10 flex flex-wrap gap-4 items-center will-change-[transform,opacity]">
             <Magnetic strength={0.2}>
               <a
                 ref={ctaRef}
@@ -417,9 +429,23 @@ export default function HeroSection() {
                   if (lenis) lenis.scrollTo('#about');
                   else document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="inline-flex items-center justify-center px-8 py-4 text-[11px] tracking-[0.2em] uppercase font-bold text-background bg-foreground rounded-full transition-transform duration-500 hover:scale-105 active:scale-95 shadow-lg group"
+                className="inline-flex items-center justify-center px-6 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold text-background bg-foreground rounded-full transition-transform duration-500 hover:scale-105 active:scale-95 shadow-lg group"
               >
-                {t.cta}
+                {t.ctaJourney}
+              </a>
+            </Magnetic>
+            <Magnetic strength={0.2}>
+              <a
+                href="#contact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const lenis = (window as any).lenis;
+                  if (lenis) lenis.scrollTo('#contact');
+                  else document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="inline-flex items-center justify-center px-6 py-3.5 text-[11px] tracking-[0.2em] uppercase font-bold text-foreground bg-transparent border border-foreground/30 rounded-full transition-all duration-500 hover:bg-foreground/5 hover:border-foreground active:scale-95 group"
+              >
+                {t.ctaCollaborate}
               </a>
             </Magnetic>
           </div>

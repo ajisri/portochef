@@ -102,23 +102,32 @@ export default function Recognition() {
           <div className="recognition-stagger flex flex-col gap-12 md:gap-20">
             <p className="text-[18px] md:text-[24px] text-foreground/80 transition-colors duration-500 leading-tight max-w-[550px] font-medium tracking-tight">
               {language === 'id'
-                ? '"Menghargai inovasi, kepemimpinan, dan dampak sosial yang dibawa melalui transformasi industri kuliner di kawasan Asia Pasifik."'
-                : '"Recognizing innovation, leadership, and social impact brought through the transformation of the culinary industry in the Asia Pacific region."'}
+                ? '"— Forbes Asia, 2017. Dari 30 individu yang mengubah cara Asia makan, berkarya, dan berinovasi."'
+                : '"— Forbes Asia, 2017. Of the 30 individuals changing the way Asia eats, creates, and innovates."'}
             </p>
 
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-10 md:gap-24">
-              <div className="flex flex-col gap-3">
-                <span className="text-[10px] tracking-[0.3em] uppercase text-foreground transition-colors duration-500 font-bold opacity-40">{language === 'id' ? 'Kategori' : 'Category'}</span>
-                <span className="text-[15px] font-semibold text-foreground transition-colors duration-500">{language === 'id' ? 'Seni (Gastronomi)' : 'The Arts (Gastronomy)'}</span>
+            <div className="flex flex-col gap-8">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-10 md:gap-24">
+                <div className="flex flex-col gap-3">
+                  <span className="text-[10px] tracking-[0.3em] uppercase text-foreground transition-colors duration-500 font-bold opacity-40">{language === 'id' ? 'Kategori' : 'Category'}</span>
+                  <span className="text-[15px] font-semibold text-foreground transition-colors duration-500">{language === 'id' ? 'Seni (Gastronomi)' : 'The Arts (Gastronomy)'}</span>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <span className="text-[10px] tracking-[0.3em] uppercase text-foreground transition-colors duration-500 font-bold opacity-40">{language === 'id' ? 'Kelas' : 'Class'}</span>
+                  <span className="text-[15px] font-semibold text-foreground transition-colors duration-500">{language === 'id' ? 'Asia — 2017' : 'Asia — 2017'}</span>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <span className="text-[10px] tracking-[0.3em] uppercase text-foreground transition-colors duration-500 font-bold opacity-40">Status</span>
+                  <span className="text-[15px] font-semibold text-foreground transition-colors duration-500">{language === 'id' ? 'Penerima Penghargaan' : 'Honoree'}</span>
+                </div>
               </div>
-              <div className="flex flex-col gap-3">
-                <span className="text-[10px] tracking-[0.3em] uppercase text-foreground transition-colors duration-500 font-bold opacity-40">{language === 'id' ? 'Kelas' : 'Class'}</span>
-                <span className="text-[15px] font-semibold text-foreground transition-colors duration-500">{language === 'id' ? 'Asia — 2017' : 'Asia — 2017'}</span>
-              </div>
-              <div className="flex flex-col gap-3">
-                <span className="text-[10px] tracking-[0.3em] uppercase text-foreground transition-colors duration-500 font-bold opacity-40">Status</span>
-                <span className="text-[15px] font-semibold text-foreground transition-colors duration-500">{language === 'id' ? 'Penerima Penghargaan' : 'Honoree'}</span>
-              </div>
+
+              {/* Micro-copy under badge (BARU) */}
+              <p className="text-[13px] md:text-[14px] text-foreground/50 italic transition-colors duration-500 font-medium tracking-wide">
+                {language === 'id'
+                  ? 'Satu-satunya chef kuliner Nusantara dalam daftar tersebut tahun ini.'
+                  : 'The only Indonesian cuisine chef on the list that year.'}
+              </p>
             </div>
           </div>
         </div>

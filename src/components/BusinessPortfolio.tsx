@@ -14,8 +14,8 @@ const getProjectsData = (lang: 'id' | 'en') => [
     name: 'Mangkokku',
     tag: lang === 'id' ? 'Kuliner / Konsep Modern' : 'Culinary / Modern Concept',
     description: lang === 'id'
-      ? 'Konsep rice bowl modern yang menyajikan cita rasa khas masakan rumahan Indonesia dalam format yang cepat, terjangkau, dan konsisten di seluruh cabang.'
-      : 'Modern rice bowl concept serving classic Indonesian comfort food flavors in a fast, accessible, and consistent format across all locations.',
+      ? 'Masakan rumahan Indonesia — dibuat skalabel. Mangkokku membuktikan bahwa makanan enak tidak harus mahal, dan konsistensi bukan milik eksklusif restoran mewah.'
+      : 'Indonesian comfort food — made scalable. Mangkokku proves that good food doesn\'t have to be expensive, and consistency is not the exclusive domain of luxury restaurants.',
     image: '/portfolio-1.png',
     baseTilt: -8,
     xOffset: -12,
@@ -50,8 +50,8 @@ const getProjectsData = (lang: 'id' | 'en') => [
     name: 'Kitchen Lab',
     tag: lang === 'id' ? 'Gastronomi / Riset' : 'Gastronomy / Research',
     description: lang === 'id'
-      ? 'Fasilitas riset dan pengembangan khusus untuk menguji coba resep, efisiensi alur kerja, dan pengenalan bahan baku baru.'
-      : 'Dedicated research and development facility for recipe testing, workflow efficiency, and exploring new ingredients.',
+      ? 'Tempat di mana gagasan diuji sebelum dijual. Semua yang ada di piring pelanggan kami sudah melewati ratusan iterasi di sini.'
+      : 'A place where ideas are tested before they are sold. Everything on our customers\' plates has gone through hundreds of iterations here.',
     image: '/portfolio-4.png',
     baseTilt: 10,
     xOffset: 18,
@@ -228,15 +228,20 @@ export default function BusinessPortfolio() {
         <div className="grain-overlay opacity-[0.015]" aria-hidden="true"></div>
 
         {/* Editorial Header Section */}
-        <div className="max-w-[1400px] w-full mx-auto mb-12 md:mb-20 grid grid-cols-1 md:grid-cols-12 gap-0 items-end z-40">
+        <div className="max-w-[1400px] w-full mx-auto mb-12 md:mb-16 grid grid-cols-1 md:grid-cols-12 gap-0 items-end z-40">
           <div className="md:col-start-1 md:col-span-10">
             <div className="portfolio-header flex flex-col gap-4 md:gap-6">
               <span className="text-[10px] tracking-[0.4em] uppercase text-ink-theme font-bold block transition-colors duration-500">
-                {language === 'id' ? 'Ekosistem Global / Bisnis' : 'Global Ecosystem / Business'}
-              </span>
-              <h2 className="text-[14vw] md:text-[8vw] font-serif leading-[0.85] tracking-tighter text-foreground md:-ml-2 transition-colors duration-500">
                 {language === 'id' ? 'Ekosistem.' : 'Ecosystem.'}
+              </span>
+              <h2 className="text-[10vw] md:text-[6vw] font-serif leading-[0.85] tracking-tighter text-foreground md:-ml-2 transition-colors duration-500">
+                {language === 'id' ? 'Apa yang Dibangun' : 'What We Build'}
               </h2>
+              <p className="text-[16px] md:text-[20px] text-foreground/70 max-w-2xl mt-4 leading-relaxed transition-colors duration-500">
+                {language === 'id' 
+                  ? 'Setiap bisnis di bawah ini lahir dari satu pertanyaan yang sama: bagaimana membuat kualitas ini bisa dinikmati lebih banyak orang?'
+                  : 'Every business below is born from the same question: how do we make this quality enjoyable for more people?'}
+              </p>
             </div>
           </div>
         </div>

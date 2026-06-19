@@ -13,8 +13,8 @@ const getTimelineData = (lang: 'id' | 'en') => [
     title: lang === 'id' ? 'Langkah Pertama' : 'First Steps',
     subtitle: lang === 'id' ? 'Pengenalan Dapur' : 'Kitchen Introduction',
     description: lang === 'id'
-      ? 'Masa awal memahami kerasnya dapur profesional. Belajar disiplin dasar, kebersihan, dan pengenalan karakter setiap bahan baku.'
-      : 'Early days of understanding the rigorous ecosystem of professional kitchens. Learning fundamental discipline, sanitation, and ingredient characteristics.',
+      ? 'Dapur tidak pernah berbohong. Di sinilah saya belajar bahwa disiplin bukan soal aturan — tapi soal menghormati proses dan setiap bahan yang ada di tangan Anda.'
+      : 'The kitchen never lies. This is where I learned that discipline is not about rules — but about respecting the process and every ingredient in your hands.',
     image: '/portfolio-1.png',
   },
   {
@@ -22,8 +22,8 @@ const getTimelineData = (lang: 'id' | 'en') => [
     title: lang === 'id' ? 'Pengembangan Teknik' : 'Technical Development',
     subtitle: lang === 'id' ? 'Eksplorasi & Struktur' : 'Exploration & Structure',
     description: lang === 'id'
-      ? 'Sepuluh tahun mengasah efisiensi kerja. Menggabungkan cita rasa lokal Nusantara dengan metode memasak modern yang terukur dan konsisten.'
-      : 'Ten years of refining operational efficiency. Integrating local Indonesian flavors with structured, consistent, and modern culinary methods.',
+      ? 'Sepuluh tahun bukan waktu yang lama untuk belajar — cukup panjang untuk tahu mana yang benar-benar bekerja. Cita rasa Nusantara yang kaya tidak perlu dimodernisasi. Ia hanya perlu sistem yang layak.'
+      : 'Ten years is not a long time to learn — but long enough to know what actually works. The rich flavors of the archipelago do not need to be modernized. They just need a proper system.',
     image: '/portfolio-2.png',
   },
   {
@@ -31,8 +31,8 @@ const getTimelineData = (lang: 'id' | 'en') => [
     title: lang === 'id' ? 'Fokus & Konsistensi' : 'Focus & Consistency',
     subtitle: lang === 'id' ? 'Standar Operasional' : 'Operational Standards',
     description: lang === 'id'
-      ? 'Dua dekade pengalaman menyederhanakan cara pandang. Menjaga kualitas hidangan tetap sama di setiap piring, setiap hari, tanpa kompromi.'
-      : 'Two decades of experience simplifying perspectives. Maintaining identical dish quality on every plate, every day, without compromise.',
+      ? 'Setelah dua dekade, definisi sukses saya berubah: bukan piring terbaik yang pernah saya buat — tapi piring ke-10.000 yang rasanya sama dengan piring pertama. Itulah sistem. Itulah yang bisa diwariskan.'
+      : 'After two decades, my definition of success has changed: not the best plate I\'ve ever made — but the 10,000th plate that tastes exactly like the first. That is a system. That is what can be inherited.',
     image: '/portfolio-3.png',
   },
 ];
@@ -141,7 +141,7 @@ export default function TimelineGallery() {
       {/* Section Global UI Labels */}
       <div className="absolute top-20 md:top-24 left-6 md:left-16 z-50 pointer-events-none pt-[env(safe-area-inset-top)]">
         <span className="text-[9px] md:text-[10px] tracking-[0.4em] uppercase text-foreground font-bold block opacity-40 transition-colors duration-500">
-          {language === 'id' ? 'Kronik / Rekam Jejak' : 'Chronicle / Track Record'}
+          {language === 'id' ? 'Dua Dekade, Satu Prinsip' : 'Two Decades, One Principle'}
         </span>
       </div>
 

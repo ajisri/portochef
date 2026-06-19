@@ -78,15 +78,43 @@ export default function Footer() {
           </h2>
           <p className="text-[17px] md:text-[20px] text-foreground/70 transition-colors duration-500 leading-relaxed max-w-[400px] font-medium">
             {language === 'id'
-              ? 'Membangun ekosistem kuliner Nusantara melalui inovasi, dedikasi, dan presisi yang tak kenal kompromi.'
-              : 'Building the archipelago culinary ecosystem through innovation, dedication, and uncompromising precision.'}
+              ? 'Ekosistem kuliner yang dimulai dari satu pertanyaan sederhana: bagaimana agar rasa terbaik bisa dirasakan semua orang?'
+              : 'A culinary ecosystem that starts with one simple question: how can the best taste be experienced by everyone?'}
           </p>
 
-          <div className="flex flex-col gap-2 mt-4">
-            <span className="text-[10px] tracking-[0.4em] uppercase text-foreground/30 transition-colors duration-500 font-bold">Email</span>
-            <a href="mailto:hello@portochef.com" className="text-[20px] md:text-[24px] font-medium border-b border-foreground/10 pb-2 w-max transition-colors hover:border-foreground">
-              hello@portochef.com
-            </a>
+          <div className="flex flex-col gap-6 mt-4">
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] tracking-[0.4em] uppercase text-foreground/30 transition-colors duration-500 font-bold">Email</span>
+              <p className="text-[13px] md:text-[14px] text-foreground/60 transition-colors duration-500 font-medium">
+                {language === 'id' 
+                  ? 'Untuk kolaborasi brand, undangan berbicara, atau konsultasi kuliner:'
+                  : 'For brand collaborations, speaking engagements, or culinary consultations:'}
+              </p>
+              <a href="mailto:hello@portochef.com" className="text-[20px] md:text-[24px] font-medium border-b border-foreground/10 pb-2 w-max transition-colors hover:border-foreground">
+                hello@portochef.com
+              </a>
+            </div>
+
+            <div className="flex flex-wrap gap-4 mt-2">
+              <Magnetic strength={0.15}>
+                <a
+                  href="mailto:hello@portochef.com?subject=Kolaborasi / Pertanyaan"
+                  className="inline-flex items-center justify-center px-5 py-2.5 text-[11px] tracking-[0.15em] uppercase font-bold text-background bg-foreground rounded-full transition-transform duration-500 hover:scale-105 active:scale-95 shadow-md"
+                >
+                  {language === 'id' ? 'Kirim Pesan' : 'Send Message'}
+                </a>
+              </Magnetic>
+              <Magnetic strength={0.15}>
+                <a
+                  href="/media-kit.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-5 py-2.5 text-[11px] tracking-[0.15em] uppercase font-bold text-foreground bg-transparent border border-foreground/20 rounded-full transition-all duration-500 hover:bg-foreground/5 hover:border-foreground/45 active:scale-95"
+                >
+                  {language === 'id' ? 'Unduh Media Kit' : 'Download Media Kit'}
+                </a>
+              </Magnetic>
+            </div>
           </div>
         </div>
 
