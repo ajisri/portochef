@@ -12,11 +12,15 @@ import AppControls from "../components/AppControls";
 const serif = Playfair_Display({
   variable: "--font-serif",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 const sans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
